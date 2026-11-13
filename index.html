@@ -28,15 +28,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 #side{background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px 12px 8px;gap:6px;min-height:0;overflow:hidden}
 .emb{width:56px;height:56px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:700;flex:none}
 .wm{text-align:center;line-height:1.15;flex:none}
-.wm .w{font-size:19px;font-weight:800;letter-spacing:3px}
-.wm .s{font-size:11px;font-weight:700;letter-spacing:.6px}
+.wm .w{font-size:19px;font-weight:800;letter-spacing:3px;color:var(--accent)}
+.wm .s{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--muted)}
 .cap{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin:4px 0 2px}
 select,input[type=text],input[type=password],input[type=number]{background:var(--field);border:1px solid var(--border);padding:4px 6px;border-radius:2px;min-width:0}
 select.sm{padding:2px 4px;font-size:11px}
 #side select{width:100%;font-weight:700;font-size:13px}
 .nav{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;font-size:13px;border-radius:3px;user-select:none}
 .nav:hover{background:var(--sub)}
-.nav .ic{width:20px;text-align:center;font-size:14px}
+.nav .ic{width:20px;text-align:center;font-size:14px}.nav .ic:empty{display:none}
 .nav.on{background:var(--accent);color:#fff;font-weight:700}
 .nav.on .ic{filter:brightness(0) invert(1)}
 .btn{background:var(--btn);border:1px solid var(--btn-b);padding:4px 10px;cursor:pointer;border-radius:2px;white-space:nowrap}
@@ -140,7 +140,7 @@ table.heat tr.clk{cursor:pointer}
 </style>
 </head>
 <body>
-<div id="strip">🧪 Demo visual con datos ficticios — ningún número, nombre o identificador de esta página corresponde a un cliente, campaña o sistema real.</div>
+<div id="strip">Demo visual con datos ficticios — ningún número, nombre o identificador de esta página corresponde a un cliente, campaña o sistema real.</div>
 <div id="app">
   <aside id="side">
     <div class="emb" id="emb"></div>
@@ -148,23 +148,23 @@ table.heat tr.clk{cursor:pointer}
     <div><div class="cap">Campaña</div><select id="camp" aria-label="Campaña"></select></div>
     <nav id="nav"></nav>
     <div style="height:1px;background:var(--border);margin:2px 0"></div>
-    <button class="btn act full" id="bupd" data-act="upd">⟳ Actualizar datos</button>
-    <button class="btn full" id="bmail" data-act="mail" disabled>✉ Enviar mail</button>
+    <button class="btn act full" id="bupd" data-act="upd">Actualizar datos</button>
+    <button class="btn full" id="bmail" data-act="mail" disabled>Enviar mail</button>
     <div id="logbox">
-      <div class="hd"><span>📋 Log en vivo</span><span class="sp"></span><button data-act="logclr">Limpiar</button><button data-act="logcp">Copiar</button></div>
+      <div class="hd"><span>Registro</span><span class="sp"></span><button data-act="logclr">Limpiar</button><button data-act="logcp">Copiar</button></div>
       <div id="log"></div>
     </div>
     <div class="foot">Demo visual<br>con datos ficticios</div>
   </aside>
   <div id="main">
     <div id="top">
-      <button class="btn" id="burger" data-act="burger" aria-label="Menú">☰</button>
+      <button class="btn" id="burger" data-act="burger" aria-label="Menú">Menú</button>
       <span style="flex:1"></span>
       <span class="ver" id="ver"></span>
-      <button class="btn" data-act="chk">🔄 Buscar actualizaciones</button>
+      <button class="btn" data-act="chk">Buscar actualizaciones</button>
       <span class="st" id="updst"></span>
-      <button class="mode demo" id="modebtn" data-act="mode">🧪 MODO DEMO</button>
-      <button class="btn" id="thbtn" data-act="theme">🌙 Oscuro</button>
+      <button class="mode demo" id="modebtn" data-act="mode">MODO DEMO</button>
+      <button class="btn" id="thbtn" data-act="theme">Tema oscuro</button>
     </div>
     <main id="view"></main>
     <div id="bar"></div>
@@ -227,9 +227,9 @@ const TIP = [["Consultas", ["Estado", "Saldo", "Horario"]], ["Reclamos", ["Cobro
 const MEDIOS = ["Voz", "Chat", "Correo", "Devolución de llamada"];
 const RANKS = [["aht_sup", "AHT supervisores"], ["aht_ag", "AHT agentes"], ["hold_sup", "Hold supervisores"], ["hold_ag", "Hold agentes"], ["ring_sup", "Ring supervisores"], ["ring_ag", "Ring agentes"], ["tab_sup", "Sin Tabular supervisores"], ["tab_ag", "Sin Tabular agentes"]];
 const NAVS = [
-  ["REPORTE", [["dashboard", "🏠", "Dashboard", "#3B82F6"], ["historial", "🕘", "Historial", "#F59E0B"]]],
-  ["GESTIÓN", [["usuarios", "👥", "Usuarios", "#10B981"], ["parametros", "🧩", "Parámetros", "#8B5CF6"], ["config", "⚙", "Configuración", "#EC4899"]]],
-  ["AYUDA", [["glosario", "📖", "Glosario", "#14B8A6"], ["changelog", "📜", "Changelog", "#F97316"], ["acerca", "ℹ", "Acerca de", "#0EA5E9"]]]
+  ["REPORTE", [["dashboard", "", "Dashboard", "#3B82F6"], ["historial", "", "Historial", "#F59E0B"]]],
+  ["GESTIÓN", [["usuarios", "", "Usuarios", "#10B981"], ["parametros", "", "Parámetros", "#8B5CF6"], ["config", "", "Configuración", "#EC4899"]]],
+  ["AYUDA", [["glosario", "", "Glosario", "#14B8A6"], ["changelog", "", "Changelog", "#F97316"], ["acerca", "", "Acerca de", "#0EA5E9"]]]
 ];
 const BADGE = { NUEVO: "#1A9E5C", FIX: "#D1460F", INFO: "#4A90D9", ELIMINADO: "#888888", ARQUITECTURA: "#6C3483", BLINDAJE: "#2E86C1", BUILD: "#7D6608", MEJORA: "#607D8B" };
 const CHANGELOG = [
@@ -495,7 +495,7 @@ function segSelHTML() {
 function topSel(key, vals) { return '<select class="sm" data-chg="' + key + '" aria-label="Top">' + vals.map((v) => '<option value="' + v + '"' + (S[key] === v ? " selected" : "") + ">" + (v === "Todos" ? "Todos" : "Top " + v) + "</option>").join("") + "</select>"; }
 function card(id, title, body, o) {
   o = o || {}; const dis = o.empty ? " disabled" : "";
-  const btns = (o.pre || "") + '<button class="btn sm" data-act="copytxt"' + dis + ">📝 Copiar texto</button>" + '<button class="btn sm" data-act="copyimg"' + dis + ">📋 Copiar imagen</button>" + '<button class="btn sm" data-act="xlsx"' + dis + ">💾 Exportar XLSX</button>" + (o.post || "");
+  const btns = (o.pre || "") + '<button class="btn sm" data-act="copytxt"' + dis + ">Copiar texto</button>" + '<button class="btn sm" data-act="copyimg"' + dis + ">Copiar imagen</button>" + '<button class="btn sm" data-act="xlsx"' + dis + ">Exportar XLSX</button>" + (o.post || "");
   return '<div class="card" data-blk="' + id + '"><div class="chd"><div class="ct">' + title + '</div><div class="cb">' + btns + "</div></div>" + body + "</div>";
 }
 const segTitle = () => (S.seg === "Todos" ? "Todos" : esc(S.seg));
@@ -676,7 +676,7 @@ function exclFilter(c) {
 }
 function exclE(c) {
   const head = ["LOB", "Franja", "Recibido", "Atendido", "Pronóstico", "% Tráf. rec.", "% Tráf. aten.", "NA %", "ABN %", "SL %", "AHT", "Aux", "Avail", "B2P", "Conectados", "Requeridos", "Diferencia"];
-  const mk = (id, title, erl) => { const rows = exclRows(c, erl); return card(id, title, rows.length ? '<div class="tw" style="max-height:340px">' + heat(head.concat(erl ? ["HC productivo", "Erlang P.", "Erlang Gross", "Dif. Erlang"] : []).map((h, i) => i === 0 ? { t: h, cls: "l" } : h), rows) + "</div>" : ph(NODATA), { pre: '<button class="btn sm" data-act="mailx">📧 Enviar mail</button>', post: exclFilter(c), empty: !rows.length }); };
+  const mk = (id, title, erl) => { const rows = exclRows(c, erl); return card(id, title, rows.length ? '<div class="tw" style="max-height:340px">' + heat(head.concat(erl ? ["HC productivo", "Erlang P.", "Erlang Gross", "Dif. Erlang"] : []).map((h, i) => i === 0 ? { t: h, cls: "l" } : h), rows) + "</div>" : ph(NODATA), { pre: '<button class="btn sm" data-act="mailx">Enviar mail</button>', post: exclFilter(c), empty: !rows.length }); };
   return mk("exA", "Cuadro exclusivo A — desde las 07:30", false) + mk("exB", "Cuadro exclusivo B — con Erlang", true);
 }
 function exclF(c) {
@@ -689,7 +689,7 @@ function exclF(c) {
   const rowOf = (r, label, cls) => ({ cls: cls || "", c: [{ t: label, cls: "l" }, String(r.ofr), String(r.out), String(r.atn), String(r.slg), r.frc > 0 ? num(r.frc) : "", pc(r.frc > 0 ? r.ofr / r.frc : null), pc(r.frc > 0 ? r.atn / r.frc : null), pc(r.na, 1), { t: pc(r.sl, 1), st: stSL(r.sl, r.ofr) }, pc((r.atn + r.abnF) > 0 ? r.slg / (r.atn + r.abnF) : null, 1), "80%", mmss(r.asa), mmss(r.ahtv), pc(r.avail, 1), pc(r.auxp, 1), pc(r.aus, 1)] });
   const body = [];
   names.forEach((n) => { const rows = segRows(c.d, c.p, n); if (!rows.length) return; body.push({ c: [{ t: n + " — total", cls: "sub" }].concat(Array(16).fill({ t: "", cls: "sub" })), cls: "" }); body.push(rowOf(sumRows(rows, c.d), "Total " + n, "tot")); rows.forEach((r) => body.push(rowOf(r, r.slot.l))); });
-  return card("repF", "Reporte", cards + '<div class="tw" style="max-height:340px">' + heat(head.map((h, i) => i === 0 ? { t: h, cls: "l" } : h), body) + "</div>", { pre: '<button class="btn sm" data-act="mailx">📧 Enviar mail</button>', post: exclFilter(c) });
+  return card("repF", "Reporte", cards + '<div class="tw" style="max-height:340px">' + heat(head.map((h, i) => i === 0 ? { t: h, cls: "l" } : h), body) + "</div>", { pre: '<button class="btn sm" data-act="mailx">Enviar mail</button>', post: exclFilter(c) });
 }
 function cardsC(c) {
   const t = sumRows(segRows(c.d, c.p, "Todos"), c.d);
@@ -724,10 +724,10 @@ function headerCard(c) {
 }
 function kpiRow(c) {
   const t = sumRows(segRows(c.d, c.p, S.seg), c.d);
-  const it = [["📞", "#2F5FDB", "Interacciones", String(t.ofr)], ["🎧", "#7C3AED", "Atención", pc(t.na, 1)], ["⏱", "#059669", "Nivel de Servicio", pc(t.sl, 1)], ["⚠", "#DC2626", "ABN", pc(t.abnp, 1)], ["⏳", "#D97706", "AHT", mmss(t.ahtv)]];
-  if (c.p.cols.aus !== false) it.push(["📅", "#6B7280", "Ausentismo", pc(t.aus, 1)]);
-  it.push(["🛠", "#0891B2", "AUX", pc(t.auxp, 1)]);
-  const k = it.map((x) => '<div class="kpi"><div class="ci" style="background:' + x[1] + '"><span style="filter:brightness(0) invert(1)">' + x[0] + '</span></div><div><div class="kl">' + x[2] + '</div><div class="kv">' + x[3] + "</div></div></div>").join("");
+  const it = [["", "#2F5FDB", "Interacciones", String(t.ofr)], ["", "#7C3AED", "Atención", pc(t.na, 1)], ["", "#059669", "Nivel de Servicio", pc(t.sl, 1)], ["", "#DC2626", "ABN", pc(t.abnp, 1)], ["", "#D97706", "AHT", mmss(t.ahtv)]];
+  if (c.p.cols.aus !== false) it.push(["", "#6B7280", "Ausentismo", pc(t.aus, 1)]);
+  it.push(["", "#0891B2", "AUX", pc(t.auxp, 1)]);
+  const k = it.map((x) => '<div class="kpi" style="border-left:4px solid ' + x[1] + '"><div><div class="kl">' + x[2] + '</div><div class="kv">' + x[3] + "</div></div></div>").join("");
   return '<div class="krow"><div class="kpis" style="grid-template-columns:repeat(' + it.length + ',minmax(0,1fr))">' + k + "</div>" + (c.p.segments.length > 1 ? '<div style="align-self:flex-start">' + segSelHTML() + "</div>" : "") + "</div>";
 }
 function blockWrap(id, inner, i, n) {
@@ -737,7 +737,7 @@ function blockWrap(id, inner, i, n) {
 function viewDashboard() {
   const c = ctx(), hd = headerCard(c);
   if (S.loading) return hd + '<div class="ph">Cargando Campaña ' + c.id + "…</div>";
-  if (!c.d) return hd + '<div class="ph">Campaña ' + c.id + ': presione Actualizar datos para cargarlos.<br><br><button class="btn act" data-act="upd">⟳ Actualizar datos</button></div>';
+  if (!c.d) return hd + '<div class="ph">Campaña ' + c.id + ': presione Actualizar datos para cargarlos.<br><br><button class="btn act" data-act="upd">Actualizar datos</button></div>';
   let h = hd + kpiRow(c);
   if (c.C.cards) h += cardsC(c);
   if (c.C.excl === "E") h += exclE(c);
@@ -847,7 +847,7 @@ function viewConfig() {
   } else if (S.ctab === "archivos") {
     const E = c.id === "E", F = c.id === "F", nube = !c.onp;
     const f = [["Descarga de colas", nube && !E && !F, "Volumen y niveles por cola y franja", "Crudos", "Sí"], ["Descarga de colas — entrada y salida", F, "Volumen y niveles de entrada y de salida", "Crudos", "Sí"], ["Descarga de agentes", nube, "Tiempo conectado y auxiliares de cada agente", "Crudos", "Sí"], ["Descarga de duraciones (AHT)", nube && !E, "Duración de cada llamada atendida", "Crudos", "Sí"], ["Descarga de interacciones", nube, E ? "Todos los LOB en un solo archivo" : "Motivos, tipificaciones y colas por franja", "Crudos", E ? "Sí" : "No"], ["Roster semanal", true, "Agentes, LOB y turno de cada persona", "Roster", "Sí"], ["Over/Under semanal", c.C.over !== "db", "Pronóstico, requeridos y planificados", "Over", "Sí"], ["Consulta a la base de datos", c.onp || c.C.over !== "xls", "Lectura de solo SELECT", "Base de datos", "Sí"]];
-    body = '<div class="card"><div class="ct">Archivos de la campaña</div><div class="b" style="margin:4px 0">' + (c.onp ? "Motor de datos: consulta a base de datos" : "Motor de datos: descargas CSV de la central") + "</div>" + heat(["Usa", { t: "Archivo", cls: "l" }, { t: "Para qué se usa", cls: "l" }, "Dónde está", "¿Es necesario?"], f.map((x) => ({ c: [x[1] ? "☑" : "☐", { t: x[0], cls: "l" }, { t: x[1] ? x[2] : "No se usa en esta campaña", cls: "l" }, x[1] ? x[3] : "—", x[1] ? x[4] : "—"], cls: x[1] ? "" : "em" }))) + '<div class="note">Esta campaña NO usa: ' + esc(f.filter((x) => !x[1]).map((x) => x[0]).join(", ") || "—") + ".</div></div>";
+    body = '<div class="card"><div class="ct">Archivos de la campaña</div><div class="b" style="margin:4px 0">' + (c.onp ? "Motor de datos: consulta a base de datos" : "Motor de datos: descargas CSV de la central") + "</div>" + heat(["Usa", { t: "Archivo", cls: "l" }, { t: "Para qué se usa", cls: "l" }, "Dónde está", "¿Es necesario?"], f.map((x) => ({ c: [x[1] ? "Sí" : "No", { t: x[0], cls: "l" }, { t: x[1] ? x[2] : "No se usa en esta campaña", cls: "l" }, x[1] ? x[3] : "—", x[1] ? x[4] : "—"], cls: x[1] ? "" : "em" }))) + '<div class="note">Esta campaña NO usa: ' + esc(f.filter((x) => !x[1]).map((x) => x[0]).join(", ") || "—") + ".</div></div>";
   } else if (S.ctab === "mail") {
     const fld = (l, k) => '<label>' + l + '</label><input type="text" data-pp="' + pp(["cfgMail", k]) + '" value="' + esc(p.cfgMail[k]) + '">';
     body = '<div class="card"><div class="frm">' + fld("Para (To)", "to") + fld("CC (separados por «;»)", "cc") + fld("Asunto", "subj") + fld("Nombre del reporte (también nombre de los adjuntos)", "name") + '</div><div class="note">Puede usar {fecha} (dd/mm), {hora} (HH:MM) y {hhmm} (HHMM) en el asunto y en el nombre.</div><div class="row"><button class="btn act" data-act="simul" data-m="Mail guardado (simulado en la demo)">Guardar</button><button class="btn" data-act="simul" data-m="Destinatarios por defecto restaurados (simulado)">Restaurar destinatarios por defecto</button></div></div>';
@@ -873,7 +873,7 @@ function viewUsers() {
   const opts = (sel) => ["Cruzar con el Roster…", "Agente 07", "Agente 12", "Agente 15", "Agente 21", "Agente 22", "Agente 23"].map((o) => "<option" + (o === sel ? " selected" : "") + ">" + o + "</option>").join("");
   let body = "";
   if (S.utab === "pend") {
-    const left = U.pend.length ? U.pend.map((x, i) => '<div class="row" style="border-bottom:1px solid var(--border);padding-bottom:6px"><b style="width:120px">' + esc(x.u) + '</b><select>' + opts("Cruzar con el Roster…") + '</select><button class="btn sm" data-act="cruz" data-i="' + i + '">Sí, es ' + esc(x.sug) + '</button><button class="btn sm" data-act="nopert" data-i="' + i + '">✖ No pertenece a la campaña — no productivo</button></div>').join("") : '<p class="muted">No hay usuarios pendientes de cruzar.</p>';
+    const left = U.pend.length ? U.pend.map((x, i) => '<div class="row" style="border-bottom:1px solid var(--border);padding-bottom:6px"><b style="width:120px">' + esc(x.u) + '</b><select>' + opts("Cruzar con el Roster…") + '</select><button class="btn sm" data-act="cruz" data-i="' + i + '">Sí, es ' + esc(x.sug) + '</button><button class="btn sm" data-act="nopert" data-i="' + i + '">No pertenece a la campaña (no productivo)</button></div>').join("") : '<p class="muted">No hay usuarios pendientes de cruzar.</p>';
     body = '<div class="grid23"><div class="card"><div class="ct" style="margin-bottom:6px">En la descarga de agentes — faltan cruzar</div>' + left + '</div><div class="card"><div class="ct" style="margin-bottom:6px">En el Roster — aún sin contar</div>' + heat(["ID", "Login", { t: "Agente", cls: "l" }, "LOB", "Turno de hoy", "Llamadas"], U.roster.map((r) => ({ c: r.map((v, k) => k === 5 && v > 0 ? { t: String(v), st: SK.bad } : (k === 2 ? { t: v, cls: "l" } : String(v))) }))) + "</div></div>";
   } else if (S.utab === "her") {
     body = '<div class="card"><div class="row"><button class="btn act" data-act="hconf">Confirmar marcados</button><button class="btn" data-act="hconfall">Confirmar todos</button><button class="btn" data-act="hundo">Deshacer marcados</button><button class="btn" data-act="simul" data-m="Cambiar cruce (simulado en la demo)">Cambiar…</button></div>' + userTable(U.her, "her") + "</div>";
@@ -881,7 +881,7 @@ function viewUsers() {
     body = '<div class="card"><div class="row"><button class="btn" data-act="rundo">Deshacer marcados</button><button class="btn" data-act="simul" data-m="Cambiar cruce (simulado en la demo)">Cambiar…</button>' + (ctx().onp ? '<button class="btn" data-act="simul" data-m="Corregir login (simulado)">Corregir login…</button><button class="btn" data-act="simul" data-m="Login erróneo (simulado)">Login erróneo</button>' : "") + "</div>" + userTable(U.res, "res") + "</div>";
   }
   const help = S.help ? '<div class="card"><div class="ct">Cómo funciona</div><ol class="small" style="line-height:1.7;margin:6px 0 0 18px"><li>La descarga de agentes trae usuarios de la central; el Roster trae a las personas con su ID.</li><li>Si el ID de log coincide, el cruce es automático.</li><li>Si no coincide, queda pendiente y se cruza a mano.</li><li>Un cruce manual se guarda y se reutiliza en los días siguientes.</li><li>Los heredados son cruces de la semana anterior que conviene revisar.</li><li>«No pertenece a la campaña» deja al usuario como no productivo.</li><li>Un usuario sin cruzar no cuenta en staff ni en productividad.</li></ol></div>' : "";
-  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Usuarios</h1><div class="muted">Cruce de los usuarios de la central con el Roster</div></div><div class="cb"><button class="btn" data-act="simul" data-m="Exportar a Excel (simulado: la demo no descarga archivos)">Exportar a Excel</button><button class="btn" data-act="help">❔ Cómo funciona</button></div></div>' +
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Usuarios</h1><div class="muted">Cruce de los usuarios de la central con el Roster</div></div><div class="cb"><button class="btn" data-act="simul" data-m="Exportar a Excel (simulado: la demo no descarga archivos)">Exportar a Excel</button><button class="btn" data-act="help">Cómo funciona</button></div></div>' +
     (U.pend.length ? '<div class="note" style="color:#DC2626;font-weight:700">Hay usuarios de la descarga de agentes que no cruzan con el Roster.</div>' : "") +
     '<div style="margin:6px 0 10px">' + tile("Usuarios en la descarga", tot) + tile("Cruzados automático", U.res.filter((x) => x.c.indexOf("automático") === 0).length) + tile("Cruce manual", U.res.filter((x) => x.c === "cruce manual").length) + tile("Pendientes", U.pend.length) + "</div>" + help +
     '<div class="tabs" role="tablist">' + tabs.map((t) => '<button class="' + (S.utab === t[0] ? "on" : "") + '" data-act="tab" data-s="utab" data-v="' + t[0] + '">' + t[1] + "</button>").join("") + "</div>" + body;
@@ -919,7 +919,7 @@ function viewChangelog() {
 }
 function viewAbout() {
   const row = (l, v) => "<tr><td class='l b' style='width:160px'>" + l + "</td><td class='l'>" + v + "</td></tr>";
-  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Acerca de</h1></div></div><div class="card"><div class="ct" style="margin-bottom:8px">Información</div><table class="heat" style="width:100%;max-width:640px"><tbody>' + row("Versión", VER) + row("Estado", "Demo con datos ficticios") + row("Fecha", "13/11/2026") + row("Desarrollado por", "Axel Hernán González 🔥") + row("Copyright", "© 2026 Axel Hernán González") + '</tbody></table><div class="row" style="margin-top:10px"><button class="btn" data-act="chk">Buscar actualizaciones</button><span class="muted small">' + esc(S.updMsg) + '</span></div><p class="muted" style="margin-top:14px">Hecho con mucho ❤ para equipos de operaciones.</p><p class="muted small">Esta página es una maqueta visual: no usa datos reales ni se conecta a ningún sistema.</p></div>';
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Acerca de</h1></div></div><div class="card"><div class="ct" style="margin-bottom:8px">Información</div><table class="heat" style="width:100%;max-width:640px"><tbody>' + row("Versión", VER) + row("Estado", "Demo con datos ficticios") + row("Fecha", "13/11/2026") + row("Maqueta creada por", "Axel Hernán González") + row("Copyright", "© 2026 Axel Hernán González") + '</tbody></table><div class="row" style="margin-top:10px"><button class="btn" data-act="chk">Buscar actualizaciones</button><span class="muted small">' + esc(S.updMsg) + '</span></div><p class="muted small">Esta página es una maqueta visual: no usa datos reales ni se conecta a ningún sistema.</p></div>';
 }
 
 /* ===================== Modales ===================== */
@@ -954,9 +954,9 @@ function renderSide() {
 }
 function renderTop() {
   $("#ver").textContent = VER;
-  const M = { red: ["🟢 MODO RED", "red"], local: ["🟠 MODO LOCAL", "loc"], demo: ["🧪 MODO DEMO", "demo"] }[S.mode], b = $("#modebtn");
+  const M = { red: ["MODO RED", "red"], local: ["MODO LOCAL", "loc"], demo: ["MODO DEMO", "demo"] }[S.mode], b = $("#modebtn");
   b.textContent = M[0]; b.className = "mode " + M[1];
-  $("#thbtn").textContent = S.theme === "dark" ? "☀ Claro" : "🌙 Oscuro";
+  $("#thbtn").textContent = S.theme === "dark" ? "Tema claro" : "Tema oscuro";
   $("#updst").textContent = S.updMsg;
 }
 const renderBar = () => { $("#bar").textContent = S.status || ("Campaña " + S.camp + ": presione Actualizar datos para cargarlos."); };
@@ -1117,15 +1117,8 @@ function onChange(e) {
 }
 
 /* ===================== Arranque ===================== */
-function initWordmark() {
-  $("#wmw").innerHTML = "KPI".split("").map((ch) => "<span>" + ch + "</span>").join("");
-  $("#wms").innerHTML = "Reporte Operativo".split("").map((ch) => (ch === " " ? " " : "<span>" + ch + "</span>")).join("");
-}
-function tickWordmark() {
-  const t = Date.now() / 1000, l = S.theme === "dark" ? 64 : 36;
-  $$("#wmw span").forEach((e, i) => { e.style.color = "hsl(" + ((t * 72 + i * 55) % 360) + ",78%," + l + "%)"; });
-  $$("#wms span").forEach((e, i) => { e.style.color = "hsl(" + ((t * 72 + 180 + i * 22) % 360) + ",70%," + l + "%)"; });
-}
+function initWordmark() { $("#wmw").textContent = "KPI"; $("#wms").textContent = "Reporte Operativo"; }
+function tickWordmark() {}
 function parseHash() {
   const q = new URLSearchParams(location.hash.replace(/^#/, ""));
   if (q.get("th")) S.theme = q.get("th") === "dark" ? "dark" : "light";
@@ -1150,7 +1143,7 @@ function boot() {
   logLine("info", "Demo visual con datos ficticios.");
   logLine("info", "Todos los números se generan al azar en el navegador.");
   render(); tickWordmark();
-  if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) setInterval(tickWordmark, 160);
+  
   actualizar();
 }
 boot();
