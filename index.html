@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reporte operativo de contact center — Demo visual (datos ficticios)</title>
+<style>
+:root{
+  --font:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --app:#F1F4F8;--card:#FFFFFF;--border:#E2E6EC;--text:#1F2937;--muted:#6B7280;
+  --accent:#2F5FDB;--accent-h:#1E3FA0;--accent-p:#172F7A;--thead:#F8FAFC;--sub:#EEF2FF;
+  --btn:#DCDAD5;--btn-h:#EEEBE7;--btn-b:#B8B5AE;--field:#FFFFFF;--tb:#000000;
+  --neu-bg:#F3F4F6;--neu-fg:#6B7280;--cell:#FFFFFF;
+}
+[data-theme="dark"]{
+  --app:#0F172A;--card:#1E293B;--border:#334155;--text:#F1F5F9;--muted:#CBD5E1;
+  --accent:#2563EB;--accent-h:#3B82F6;--accent-p:#1D4ED8;--thead:#273449;--sub:#334155;
+  --btn:#475569;--btn-h:#64748B;--btn-b:#64748B;--field:#0F172A;--tb:#0B1220;
+  --neu-bg:#2B3648;--neu-fg:#CBD5E1;--cell:#2B3648;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:12px/1.4 var(--font);background:var(--app);color:var(--text);overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.muted{color:var(--muted)}.small{font-size:11px}.tiny{font-size:10px}.b{font-weight:700}
+#strip{height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#2F5FDB,#0C9A82);color:#fff;font-weight:600;font-size:12px;padding:0 10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app{display:grid;grid-template-columns:230px minmax(0,1fr);height:calc(100vh - 28px)}
+#side{background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px 12px 8px;gap:6px;min-height:0;overflow:hidden}
+.emb{width:56px;height:56px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:700;flex:none}
+.wm{text-align:center;line-height:1.15;flex:none}
+.wm .w{font-size:19px;font-weight:800;letter-spacing:3px}
+.wm .s{font-size:11px;font-weight:700;letter-spacing:.6px}
+.cap{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin:4px 0 2px}
+select,input[type=text],input[type=password],input[type=number]{background:var(--field);border:1px solid var(--border);padding:4px 6px;border-radius:2px;min-width:0}
+select.sm{padding:2px 4px;font-size:11px}
+#side select{width:100%;font-weight:700;font-size:13px}
+.nav{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;font-size:13px;border-radius:3px;user-select:none}
+.nav:hover{background:var(--sub)}
+.nav .ic{width:20px;text-align:center;font-size:14px}
+.nav.on{background:var(--accent);color:#fff;font-weight:700}
+.nav.on .ic{filter:brightness(0) invert(1)}
+.btn{background:var(--btn);border:1px solid var(--btn-b);padding:4px 10px;cursor:pointer;border-radius:2px;white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--btn-h)}
+.btn.act{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.btn.act:hover:not(:disabled){background:var(--accent-h)}
+.btn.act:active:not(:disabled){background:var(--accent-p)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.full{width:100%}.btn.sm{padding:2px 7px;font-size:11px}
+#logbox{flex:1;min-height:80px;display:flex;flex-direction:column;border:1px solid var(--border)}
+#logbox .hd{background:var(--accent);color:#fff;display:flex;align-items:center;gap:6px;padding:3px 6px;font-weight:700;font-size:11px}
+#logbox .hd .sp{flex:1}
+#logbox .hd button{background:rgba(255,255,255,.2);border:0;color:#fff;font-size:10px;padding:1px 6px;cursor:pointer;border-radius:2px}
+#log{background:#0A1A3A;color:#A8C8FF;font:10.5px/1.45 Consolas,"Courier New",monospace;flex:1;overflow:auto;padding:5px 6px}
+#log .t{color:#5A8AAA}#log .step{color:#5BC8F5}#log .success{color:#4EC98A}#log .warning{color:#FFC220}#log .error{color:#FF6B6B;font-weight:700}
+.foot{font-size:10px;font-weight:700;color:var(--muted);text-align:center;line-height:1.3;flex:none}
+#main{display:flex;flex-direction:column;min-width:0;min-height:0}
+#top{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:6px 16px;flex-wrap:wrap;flex:none}
+#top .ver{font-weight:700;color:var(--muted);font-size:12px}
+#top .st{font-size:11px;color:var(--muted)}
+#top .st.new{color:var(--accent);text-decoration:underline;cursor:pointer}
+.mode{border:0;color:#fff;font-weight:700;padding:5px 12px;cursor:default;border-radius:2px}
+.mode.red{background:#16A34A;cursor:pointer}.mode.loc{background:#F97316;cursor:pointer}.mode.demo{background:#6B7280}
+#burger{display:none}
+#view{flex:1;overflow:auto;padding:0 16px 16px;min-height:0}
+#bar{flex:none;padding:3px 16px;border-top:1px solid var(--border);background:var(--card);font-size:11px;color:var(--muted);min-height:22px}
+.card{background:var(--card);border:1px solid var(--border);padding:12px;margin-bottom:12px}
+.chd{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.ct{font-size:15px;font-weight:700}
+.cb{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+h1.pt{font-size:21px;margin:0 0 2px}
+.hdr{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.chip{display:flex;flex-direction:column;gap:1px;max-width:260px}
+.chip .lbl{font-size:10px;color:var(--muted)}
+.pill{padding:2px 8px;font-weight:700;font-size:11px;border-radius:2px;line-height:1.3}
+.pill.ok{background:#DCFCE7;color:#166534}.pill.bad{background:#FEE2E2;color:#991B1B}.pill.neu{background:var(--neu-bg);color:var(--neu-fg)}
+.dayrow{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px}
+.note{font-size:11px;color:var(--muted);margin:4px 0}
+.kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--border);padding:8px;display:flex;gap:8px;align-items:center;min-width:0}
+.kpi .ci{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.kpi .kl{font-size:10px;color:var(--muted)}.kpi .kv{font-size:19px;font-weight:700;line-height:1.1}
+.krow{display:flex;gap:8px;align-items:stretch;margin-bottom:12px}.krow .kpis{flex:1;margin:0}
+.bctl{display:flex;gap:4px;align-items:center;justify-content:flex-end;margin-bottom:3px}
+.tw{overflow:auto;max-width:100%}
+table.heat{border-collapse:collapse;font-size:11px}
+table.heat th,table.heat td{border:1px solid var(--tb);padding:2px 6px;text-align:center;white-space:nowrap;background:var(--cell)}
+table.heat th{background:var(--thead);font-weight:700}
+table.heat td.l,table.heat th.l{text-align:left}
+table.heat tr.tot td{font-weight:700;background:var(--sub)}
+table.heat td.sub{font-weight:700;background:var(--sub);text-align:left}
+table.heat td.em{color:var(--muted);font-style:italic}
+table.heat td.sel{outline:2px solid var(--accent);outline-offset:-2px}
+table.heat tr.rsel td{background:#DBE7FF;color:#111}
+table.heat tr.clk{cursor:pointer}
+.rkrow{display:flex;gap:12px;overflow:auto;padding-bottom:6px;align-items:flex-start}
+.rk{min-width:210px;flex:none}.rkt{font-weight:700;font-size:11px;padding:3px 6px;background:var(--thead);border:1px solid var(--tb);border-bottom:0;text-align:center}
+.ph{padding:50px 20px;text-align:center;color:var(--muted);font-size:15px}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:10px}
+.tabs button{padding:7px 14px;border:1px solid var(--border);border-bottom:0;background:var(--btn);cursor:pointer;margin-bottom:-1px}
+.tabs button.on{background:var(--card);font-weight:700;border-bottom:1px solid var(--card)}
+.grid2{display:grid;grid-template-columns:5fr 2fr;gap:12px}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid23{display:grid;grid-template-columns:2fr 3fr;gap:12px}
+.ck{display:inline-flex;align-items:center;gap:5px;margin:2px 14px 2px 0;font-size:12px;cursor:pointer}
+.ckgrid{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:2px 10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.sec{font-weight:700;font-size:13px;margin:10px 0 4px}
+.frm{display:grid;grid-template-columns:200px minmax(0,420px);gap:8px 10px;align-items:center}
+.frm input[type=text],.frm input[type=password]{width:100%}
+.tree{font-size:12px}.tree .gr{font-weight:700;margin-top:6px}.tree .it{padding:2px 6px 2px 16px;cursor:pointer}.tree .it:hover{background:var(--sub)}.tree .it.on{background:var(--accent);color:#fff}
+.det h2{margin:2px 0 4px;font-size:20px}.det h4{margin:12px 0 2px;font-size:12px;color:var(--accent)}
+.cl{border:2px solid var(--border);margin-bottom:12px}.cl .cht{color:#fff;font-weight:700;padding:5px 10px;font-size:13px}.cl .cli{display:flex;gap:10px;align-items:flex-start;padding:5px 10px;border-top:1px solid var(--border)}
+.bdg{color:#fff;font-weight:700;font-size:10px;padding:1px 6px;min-width:84px;text-align:center;flex:none}
+.hl{background:#fff176!important;color:#000!important}
+.tile{display:inline-flex;flex-direction:column;border:1px solid var(--border);padding:4px 12px;margin-right:6px;font-weight:700;min-width:120px}
+.tile span{font-size:10px;font-weight:400;color:var(--muted)}
+.cardrow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.sc{border:1px solid var(--border);padding:6px 8px;background:var(--card)}.sc .l{font-size:10px;color:var(--muted)}.sc .v{font-size:17px;font-weight:700}
+.sc.r{background:#FEE2E2;color:#991B1B}.sc.d{background:#1E3A8A;color:#fff}.sc.d .l{color:#DBEAFE}
+#toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#111827;color:#fff;padding:8px 16px;border-radius:4px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;max-width:80vw;text-align:center}
+#toast.on{opacity:.96}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:40}
+#modal.on{display:flex}
+#modal .box{background:var(--card);border:1px solid var(--border);padding:16px;min-width:300px;max-width:min(560px,92vw);max-height:86vh;overflow:auto}
+#modal h3{margin:0 0 8px;font-size:15px}
+.cal{display:grid;grid-template-columns:repeat(7,36px);gap:2px;margin:8px 0}
+.cal button{height:30px;border:1px solid var(--border);background:var(--card);cursor:pointer}
+.cal button:disabled{opacity:.35;cursor:not-allowed}.cal button.on{background:var(--accent);color:#fff}
+.cal .h{text-align:center;font-weight:700;font-size:10px;color:var(--muted);line-height:30px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.grid2,.grid23,.cols2{grid-template-columns:1fr}.cardrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:900px){
+  #app{grid-template-columns:minmax(0,1fr)}
+  #side{position:fixed;left:0;top:28px;bottom:0;width:250px;z-index:30;transform:translateX(-100%);transition:transform .2s}
+  #side.open{transform:none}#burger{display:inline-block}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.frm{grid-template-columns:1fr}
+}
+@media (max-height:760px){.emb,.foot{display:none}}
+
+</style>
+</head>
+<body>
+<div id="strip">🧪 Demo visual con datos ficticios — ningún número, nombre o identificador de esta página corresponde a un cliente, campaña o sistema real.</div>
+<div id="app">
+  <aside id="side">
+    <div class="emb" id="emb"></div>
+    <div class="wm"><div class="w" id="wmw"></div><div class="s" id="wms"></div></div>
+    <div><div class="cap">Campaña</div><select id="camp" aria-label="Campaña"></select></div>
+    <nav id="nav"></nav>
+    <div style="height:1px;background:var(--border);margin:2px 0"></div>
+    <button class="btn act full" id="bupd" data-act="upd">⟳ Actualizar datos</button>
+    <button class="btn full" id="bmail" data-act="mail" disabled>✉ Enviar mail</button>
+    <div id="logbox">
+      <div class="hd"><span>📋 Log en vivo</span><span class="sp"></span><button data-act="logclr">Limpiar</button><button data-act="logcp">Copiar</button></div>
+      <div id="log"></div>
+    </div>
+    <div class="foot">Demo visual<br>con datos ficticios</div>
+  </aside>
+  <div id="main">
+    <div id="top">
+      <button class="btn" id="burger" data-act="burger" aria-label="Menú">☰</button>
+      <span style="flex:1"></span>
+      <span class="ver" id="ver"></span>
+      <button class="btn" data-act="chk">🔄 Buscar actualizaciones</button>
+      <span class="st" id="updst"></span>
+      <button class="mode demo" id="modebtn" data-act="mode">🧪 MODO DEMO</button>
+      <button class="btn" id="thbtn" data-act="theme">🌙 Oscuro</button>
+    </div>
+    <main id="view"></main>
+    <div id="bar"></div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+<div id="modal"><div class="box" id="mbox"></div></div>
+
+<script>
+(function () {
+"use strict";
+
+/* ===================== Utilidades ===================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad = (n) => String(n).padStart(2, "0");
+const num = (v, d) => (v == null || !isFinite(v)) ? "—" : Number(v).toFixed(d || 0).replace(".", ",");
+const pc = (v, d) => (v == null || !isFinite(v)) ? "—" : num(v * 100, d || 0) + "%";
+const mmss = (s) => { if (s == null || !isFinite(s)) return "—"; s = Math.round(s); return Math.floor(s / 60) + ":" + pad(s % 60); };
+const hmmss = (s) => { s = Math.round(s); return Math.floor(s / 3600) + ":" + pad(Math.floor((s % 3600) / 60)) + ":" + pad(s % 60); };
+function mulberry32(a) { return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hs(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+const rgb = (a) => "rgb(" + a.join(",") + ")";
+function pctile(arr, p) { if (!arr.length) return null; const s = arr.slice().sort((x, y) => x - y); const k = (s.length - 1) * p; const f = Math.floor(k), c = Math.ceil(k); return s[f] + (s[c] - s[f]) * (k - f); }
+function scale3(v, min, med, max, c0, c1, c2) { const A = hex(c0), B = hex(c1), C = hex(c2); if (max <= min) return rgb(B); if (v <= med) return rgb(mix(A, B, (v - min) / ((med - min) || 1))); return rgb(mix(B, C, (v - med) / ((max - med) || 1))); }
+const SK = {
+  good: "background:#DCFCE7;color:#166534", warn: "background:#FEF3C7;color:#92400E",
+  bad: "background:#FEE2E2;color:#991B1B", neu: "background:var(--neu-bg);color:var(--neu-fg)",
+  info: "background:#8EAADB;color:#44546A"
+};
+const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+const DOWL = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const fdate = (d) => pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear();
+const fdateL = (d) => DOWL[d.getDay()] + " " + d.getDate() + " de " + MES[d.getMonth()] + " de " + d.getFullYear();
+function isoWeek(d) { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n); const y = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y) / 864e5 + 1) / 7); }
+const toMin = (s) => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s).trim()); if (!m) return NaN; const h = +m[1], mi = +m[2]; return (mi > 59 || h > 24 || (h === 24 && mi > 0)) ? NaN : h * 60 + mi; };
+const NB = "     ";
+
+/* ===================== Definiciones estáticas ===================== */
+const VER = "v1.0-demo";
+const CAMPS = {
+  A: { kind: "nube", hue: 215, segs: { "Ventas": ["Cola_Ventas", "Cola_Cotizaciones", "Cola_Planes"], "Soporte": ["Cola_Soporte", "Cola_Tecnico", "Cola_Reclamos"] }, extra: ["Cola_Interna"], over: "xls", rosterOk: true },
+  B: { kind: "nube", hue: 160, segs: { "Retención": ["Cola_Retencion", "Cola_Bajas", "Cola_Ofertas"], "Soporte": ["Cola_Consultas", "Cola_Reclamos", "Cola_Facturacion"] }, extra: ["Cola_Pruebas"], over: "db", rosterOk: true },
+  C: { kind: "nube", hue: 28, segs: { "General": ["Cola_General", "Cola_Consultas", "Cola_Reclamos", "Cola_Tramites"] }, extra: ["Cola_Interna"], over: "both", rosterOk: true, cards: true },
+  D: { kind: "nube", hue: 280, segs: { "General": ["Cola_Mesa", "Cola_Ayuda", "Cola_Seguimiento", "Cola_Asesoria", "Cola_VIP"] }, extra: [], over: "xls", rosterOk: false },
+  E: { kind: "nube", hue: 340, segs: { "LOB 1": ["Cola_Pedidos", "Cola_Cambios", "Cola_Envios"], "LOB 2": ["Cola_Pagos", "Cola_Cuentas", "Cola_Fraude"], "LOB 3": ["Cola_Seguros", "Cola_Siniestros", "Cola_Polizas"] }, extra: [], over: "xls", rosterOk: true, excl: "E", single: true },
+  F: { kind: "nube", hue: 190, segs: { "Entrada": ["Cola_Entrada_1", "Cola_Entrada_2", "Cola_Entrada_3"], "Salida": ["Cola_Salida_1", "Cola_Salida_2"] }, extra: [], over: "xls", rosterOk: true, excl: "F", dual: true },
+  G: { kind: "onp", hue: 45, segs: { "Soporte": ["Skill_101", "Skill_102", "Skill_103"], "Cobranza": ["Skill_201", "Skill_202"] }, extra: ["Skill_999"], over: "db", rosterOk: true },
+  H: { kind: "onp", hue: 95, segs: { "Atención": ["Skill_301", "Skill_302"], "Ventas": ["Skill_311", "Skill_312"], "Retención": ["Skill_321"], "Cobranza": ["Skill_331", "Skill_332"], "Soporte N1": ["Skill_341"], "Soporte N2": ["Skill_351"], "Reclamos": ["Skill_361"], "Backoffice": ["Skill_371"], "Saliente": ["Skill_381"] }, extra: [], over: "db", rosterOk: true }
+};
+const AUX_NUBE = ["Break", "Ocupado", "Capacitación", "Disponible", "Ausente", "Comida", "Reunión", "Sistema Ausente", "Fuera de cola"];
+const AUX_ONP = ["No Usar", "Baño", "Calidad", "Formación", "Break", "Call Back", "Coaching Supervisor", "Backoffice", "Lunch", "Otros"];
+const COLS = [["frc", "FRC"], ["ofr", "OFR"], ["atn", "ATN"], ["abn", "ABN"], ["var", "%VAR"], ["o2f", "%O2F"], ["h2f", "%H2F"], ["sl", "%SL"], ["na", "%NA"], ["asa", "ASA"], ["aht", "AHT"], ["avail", "%Avail"], ["sched", "Sched"], ["req", "Req"], ["pres", "Pres"], ["prod", "Prod"], ["aus", "%AUS"], ["aux", "%AUX"]];
+const MOTIVOS = ["Consulta de estado", "Reclamo por cobro", "Cambio de datos", "Solicitud de baja", "Consulta de saldo", "Problema de acceso", "Información de producto", "Seguimiento de caso", "Felicitaciones", "Cotización", "Garantía", "Devolución", "Facturación", "Soporte técnico", "Reprogramación", "Activación", "Cambio de plan", "Falla del servicio", "Consulta de horario", "Mejora de cuenta", "Cierre de caso", "Duplicado de documento", "Otros motivos", "Sin motivo"];
+const TIP = [["Consultas", ["Estado", "Saldo", "Horario"]], ["Reclamos", ["Cobro", "Servicio", "Garantía"]], ["Gestiones", ["Cambio de datos", "Baja", "Activación"]], ["Soporte", ["Acceso", "Técnico"]]];
+const MEDIOS = ["Voz", "Chat", "Correo", "Devolución de llamada"];
+const RANKS = [["aht_sup", "AHT supervisores"], ["aht_ag", "AHT agentes"], ["hold_sup", "Hold supervisores"], ["hold_ag", "Hold agentes"], ["ring_sup", "Ring supervisores"], ["ring_ag", "Ring agentes"], ["tab_sup", "Sin Tabular supervisores"], ["tab_ag", "Sin Tabular agentes"]];
+const NAVS = [
+  ["REPORTE", [["dashboard", "🏠", "Dashboard", "#3B82F6"], ["historial", "🕘", "Historial", "#F59E0B"]]],
+  ["GESTIÓN", [["usuarios", "👥", "Usuarios", "#10B981"], ["parametros", "🧩", "Parámetros", "#8B5CF6"], ["config", "⚙", "Configuración", "#EC4899"]]],
+  ["AYUDA", [["glosario", "📖", "Glosario", "#14B8A6"], ["changelog", "📜", "Changelog", "#F97316"], ["acerca", "ℹ", "Acerca de", "#0EA5E9"]]]
+];
+const BADGE = { NUEVO: "#1A9E5C", FIX: "#D1460F", INFO: "#4A90D9", ELIMINADO: "#888888", ARQUITECTURA: "#6C3483", BLINDAJE: "#2E86C1", BUILD: "#7D6608", MEJORA: "#607D8B" };
+const CHANGELOG = [
+  { t: "Versión " + VER + " — 13/11/2026", c: "#2F5FDB", it: [["NUEVO", "Maqueta navegable con 8 campañas ficticias (A a H), seis con fuente tipo nube y dos con fuente tipo on-premise."], ["NUEVO", "Dashboard con 9 bloques reordenables y colapsables, KPIs y chips de estado."], ["NUEVO", "Parámetros con 7 pestañas: los cambios se aplican al instante sobre el dashboard."], ["INFO", "Todos los números se generan al azar en el navegador; la página no lee archivos ni consulta bases de datos."]] },
+  { t: "Día 12/11/2026", c: "#2F5FDB", it: [["MEJORA", "Tema oscuro: cambian solo los colores neutros, los semáforos de datos se mantienen."], ["MEJORA", "Los filtros de segmento quedaron sincronizados entre todos los paneles."], ["FIX", "La fila Total de Niveles x Franja ya no muestra flecha de variación."]] },
+  { t: "Día 10/11/2026", c: "#2F5FDB", it: [["NUEVO", "Pantalla de cruce de usuarios de la central con el Roster."], ["NUEVO", "Historial con el Excel del día, actualizado en cada «Actualizar datos»."], ["ARQUITECTURA", "Cálculo de métricas como razón de sumas, nunca promedio de promedios."], ["BLINDAJE", "Un panel con error ya no tumba al resto del dashboard."]] }
+];
+const GLOSS = [
+  { g: "Volumen", intro: "Cantidades de contactos que pasan por las colas de cada segmento.", it: [
+    { n: "OFR", m: "Llamadas que llegaron a las colas del segmento (ofrecidas).", c: "Suma de la oferta de las colas que cuentan en el segmento.", o: "Descarga de colas de la central (o consulta a la base de datos)." },
+    { n: "ATN", m: "Llamadas contestadas por un agente.", c: "Suma de contestadas.", o: "Descarga de colas de la central." },
+    { n: "ABN", m: "Llamadas cortadas por el cliente antes de ser atendido, sin contar los cortes rápidos.", c: "Abandonadas − abandono rápido.", o: "Descarga de colas de la central." },
+    { n: "Out", m: "Llamadas salientes.", c: "Suma de salientes.", o: "Descarga de colas (solo campañas con salientes)." }] },
+  { g: "Niveles", intro: "Indicadores de calidad de atención. Todos se calculan como razón de sumas.", it: [
+    { n: "%NA", m: "Qué parte de lo ofrecido se atendió (nivel de atención).", c: "ATN ÷ OFR.", o: "Calculado a partir de OFR y ATN." },
+    { n: "%ABN", m: "Qué parte de lo ofrecido se abandonó.", c: "ABN ÷ OFR.", o: "Calculado a partir de OFR y ABN." },
+    { n: "%SL", m: "Qué parte de lo atendido se contestó dentro del objetivo de tiempo (nivel de servicio).", c: "Atendidas dentro del objetivo ÷ ATN.", o: "Descarga de colas de la central." },
+    { n: "ASA", m: "Cuánto tardó en contestarse una llamada, en promedio.", c: "Promedio simple de la velocidad de respuesta de las filas cola-franja.", o: "Descarga de colas de la central." }] },
+  { g: "Tiempos", intro: "Duración de las llamadas atendidas.", it: [
+    { n: "AHT", m: "Tiempo promedio de manejo por llamada atendida.", c: "(conversación + retención + trabajo posterior) ÷ ATN.", o: "Descarga de duraciones (AHT) de la central." },
+    { n: "Prom Hold / Prom Ring", m: "Espera en retención por llamada / timbre sin respuesta por llamada.", c: "Retención total ÷ ATN / «no responde» ÷ ATN.", o: "Descarga de duraciones de la central." }] },
+  { g: "Pronóstico y dotación", intro: "Comparan lo ocurrido contra lo planificado y miden el uso del tiempo de los agentes. Una franja equivale a 1800 segundos.", it: [
+    { n: "FRC / Req / Sched", m: "Pronóstico de llamadas, agentes requeridos y agentes planificados.", c: "Se leen tal cual de la tabla Over/Under.", o: "Archivo semanal Over (Excel) o base de datos." },
+    { n: "%O2F / %H2F", m: "Cuánto de lo pronosticado llegó / se atendió.", c: "OFR ÷ FRC / ATN ÷ FRC.", o: "OFR y ATN contra el pronóstico del Over." },
+    { n: "Pres / Prod", m: "Agentes presentes y agentes productivos, en promedio de la franja.", c: "Conectado ÷ 1800 s / (conectado − auxiliar) ÷ 1800 s.", o: "Descarga de agentes cruzada con el Roster." },
+    { n: "%Avail", m: "Tiempo libre esperando llamadas.", c: "Inactivo ÷ conectado.", o: "Descarga de agentes." },
+    { n: "%AUX", m: "Tiempo en estados auxiliares.", c: "Suma de auxiliares ÷ conectado.", o: "Descarga de agentes." },
+    { n: "%AUS", m: "Cuánto de lo planificado no estuvo presente (ausentismo).", c: "(Sched − Pres) ÷ Sched.", o: "Over (Sched) y descarga de agentes (Pres)." },
+    { n: "Detalle AUX", m: "Reparto del tiempo conectado entre cada auxiliar.", c: "Cada categoría ÷ conectado de la franja.", o: "Descarga de agentes." }] },
+  { g: "Variación", intro: "Cómo se mueve el volumen de una franja a la siguiente.", it: [
+    { n: "%VAR", m: "Variación del volumen contra la franja anterior.", c: "OFR ÷ OFR anterior − 1. La flecha y el color dependen de los percentiles 25, 50 y 75 de la tabla.", o: "Calculado a partir de OFR." }] },
+  { g: "Rankings y detalle", intro: "Ordenan a supervisores y agentes, y abren el detalle de motivos y colas.", it: [
+    { n: "Ranking AHT", m: "Duración media del agente o supervisor, de mayor a menor entre quienes atendieron.", c: "(conversación + retención + trabajo posterior) ÷ contestadas.", o: "Descarga de duraciones." },
+    { n: "Motivo / Tipificación", m: "Para qué llamó el cliente.", c: "Llamadas agrupadas por conclusión: Vol, %Vol y AHT.", o: "Descarga de interacciones (solo campañas tipo nube)." },
+    { n: "Ingresos por franja y cola", m: "Llamadas por franja y por cola.", c: "Conteo.", o: "Descarga de colas." }] },
+  { g: "Reglas del reporte", intro: "Reglas generales de cómo se arma cada tabla.", it: [
+    { n: "Horario de la campaña", m: "Franjas que trae el reporte.", c: "Según Parámetros → Horario y la opción «solo con actividad».", o: "Parámetros." },
+    { n: "Franjas incompletas", m: "Franja que todavía está acumulando datos.", c: "Se excluye de tablas y totales; el encabezado la marca «en curso».", o: "Hora de la última franja cerrada." },
+    { n: "Segmentos que se ven", m: "Segmentos mostrados en el dashboard.", c: "Lo destildado sale de todo el reporte; el total suma lo visible.", o: "Parámetros → Tablas." },
+    { n: "Qué lleva el mail", m: "Secciones y adjuntos del «Enviar mail».", c: "Todo por defecto; se ajusta en Parámetros → Mail.", o: "Parámetros." }] }
+];
+
+
+/* ===================== Parámetros por campaña ===================== */
+const LS_KEY = "kpidemo.params.v3";
+let P = {};
+const lobOf = (s) => (s.indexOf("LOB") === 0 ? s : "LOB " + s);
+function defParams(id) {
+  const C = CAMPS[id], onp = C.kind === "onp", segs = Object.keys(C.segs);
+  const p = {
+    segments: segs.map((n) => ({ name: n, origen: "De la campaña" })),
+    queueMap: {}, queueOrigin: {}, lobMap: {}, lobOrigin: {}, overXlsMap: {}, overDbMap: {}, overOrigin: {},
+    overMode: "100",
+    mail: { body: { acum: true, traf: true, niv: true, aux: true, rsup: true, rag: true, ingr: true, tipo: !onp }, adj: { acum: true, tipif: !onp }, segs: {}, traf: {}, rk: {} },
+    aux: {}, cols: {}, frc1: false, medios: {}, segVis: {}, imgNiv: {}, imgRk: {},
+    horario: { lv: { d: "", h: "" }, fin: { d: "", h: "" }, fer: { d: "", h: "" } },
+    solo: false, feriados: [], skills: {}, exclF: "Todos"
+  };
+  segs.forEach((n) => {
+    C.segs[n].forEach((q) => { p.queueMap[q] = n; p.queueOrigin[q] = "Por defecto"; });
+    const L = lobOf(n);
+    p.lobMap[L] = n; p.lobOrigin[L] = "Por defecto";
+    p.overXlsMap[L] = n; p.overDbMap[L] = n; p.overOrigin[L] = "Por defecto";
+    p.mail.segs[n] = true; p.mail.traf[n] = true; p.segVis[n] = true; p.imgNiv[n] = true;
+  });
+  C.extra.forEach((q) => { p.queueMap[q] = null; p.queueOrigin[q] = "Por defecto"; });
+  p.lobMap["LOB Apoyo"] = null; p.lobOrigin["LOB Apoyo"] = "Por defecto";
+  p.overXlsMap["LOB Apoyo"] = null; p.overDbMap["LOB Apoyo"] = null; p.overOrigin["LOB Apoyo"] = "Por defecto";
+  (onp ? AUX_ONP : AUX_NUBE).forEach((c) => { p.aux[c] = c !== "Fuera de cola"; });
+  COLS.forEach((c) => { p.cols[c[0]] = !(onp && c[0] === "aus"); });
+  MEDIOS.forEach((m) => { p.medios[m] = !(id === "C" && m === "Devolución de llamada"); });
+  RANKS.forEach((r) => { p.mail.rk[r[0]] = r[0] === "aht_sup" || r[0] === "aht_ag"; p.imgRk[r[0]] = true; });
+  p.fmed = { in: {}, out: {} };
+  MEDIOS.forEach((m) => { p.fmed.in[m] = m === "Voz"; p.fmed.out[m] = m === "Devolución de llamada"; });
+  if (onp) {
+    const all = []; segs.forEach((n) => C.segs[n].forEach((q) => all.push(q))); C.extra.forEach((q) => all.push(q));
+    all.forEach((q) => { p.skills[q] = { nombre: "Skill " + q.replace("Skill_", ""), origen: "Por defecto" }; });
+  }
+  return p;
+}
+function loadP() {
+  let o = null;
+  try { o = JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch (e) { o = null; }
+  Object.keys(CAMPS).forEach((k) => { const d = defParams(k); P[k] = o && o[k] ? Object.assign(d, o[k]) : d; });
+}
+function saveP() { try { localStorage.setItem(LS_KEY, JSON.stringify(P)); } catch (e) { /* sin almacenamiento */ } }
+
+/* ===================== Generación de datos ficticios ===================== */
+const SLOTS = [];
+for (let m = 450; m <= 1230; m += 30) SLOTS.push({ m: m, l: pad(Math.floor(m / 60)) + ":" + pad(m % 60) });
+const shape = (m) => { const x = m / 60; return 0.22 + 0.78 * Math.exp(-Math.pow(x - 11.5, 2) / (2 * 2.3 * 2.3)) + 0.68 * Math.exp(-Math.pow(x - 16.5, 2) / (2 * 1.9 * 1.9)); };
+
+function genData(id, seed, dayOff) {
+  const C = CAMPS[id], onp = C.kind === "onp";
+  const R = mulberry32(hs(id) + seed * 101 + dayOff * 977);
+  const rr = (a, b) => a + R() * (b - a);
+  const date = new Date(); date.setHours(12, 0, 0, 0); date.setDate(date.getDate() - dayOff);
+  const segNames = Object.keys(C.segs);
+  const d = { id: id, kind: C.kind, date: date, closed: 8 + Math.floor(R() * 15), ago: Math.floor(rr(4, 85)), q: {}, lobs: {}, over: {}, agents: [], mot: {}, tip: {}, stamp: new Date() };
+  const work = {}; segNames.forEach((n) => { work[n] = SLOTS.map(() => 0); });
+  const allQ = [];
+  segNames.forEach((n) => C.segs[n].forEach((q) => allQ.push({ q: q, seg: n, extra: false })));
+  C.extra.forEach((q) => allQ.push({ q: q, seg: null, extra: true }));
+  allQ.forEach((o) => {
+    const base = o.extra ? rr(2, 5) : rr(14, 46);
+    d.q[o.q] = SLOTS.map((s, i) => {
+      const ofr = Math.max(0, Math.round(base * shape(s.m) * rr(0.82, 1.18)));
+      if (!ofr) return { ofr: 0, atn: 0, abnR: 0, abnF: 0, slg: 0, aht: 0, hold: 0, ring: 0, out: 0, asa: 0 };
+      const abnR = Math.min(ofr, Math.round(ofr * rr(0.01, 0.12))), abnF = Math.round(abnR * rr(0, 0.25));
+      const atn = ofr - abnR, aht = Math.round(atn * rr(250, 570));
+      if (o.seg) work[o.seg][i] += aht;
+      return { ofr: ofr, atn: atn, abnR: abnR, abnF: abnF, slg: Math.round(atn * rr(0.70, 0.98)), aht: aht, hold: Math.round(aht * 0.1), ring: Math.round(atn * rr(0, 3)), out: onp ? Math.round(atn * rr(0, 0.12)) : 0, asa: rr(2, 38) };
+    });
+  });
+  const cats = onp ? AUX_ONP : AUX_NUBE;
+  const mkAux = (t) => { const w = cats.map(() => 0.2 + R()), s = w.reduce((a, b) => a + b, 0), a = {}; cats.forEach((c, k) => { a[c] = t * w[k] / s; }); return a; };
+  segNames.forEach((n) => {
+    d.lobs[lobOf(n)] = SLOTS.map((s, i) => {
+      const W = work[n][i]; if (W <= 0) return { conn: 0, idle: 0, aux: {} };
+      const auxT = (W / rr(0.62, 0.84)) * rr(0.10, 0.28);
+      const idle = Math.max((W / rr(0.62, 0.84)) - W - auxT, W * 0.08);
+      return { conn: W + auxT + idle, idle: idle, aux: mkAux(auxT) };
+    });
+    d.over[lobOf(n)] = SLOTS.map((s, i) => {
+      const frc = Math.round(work[n][i] / 410 * rr(0.88, 1.15));
+      const req = Math.ceil(frc * 420 / 1800 / 0.82);
+      return { frc: frc, req: req, sched: Math.max(1, Math.round(work[n][i] / 1800 / 0.72 * rr(1.02, 1.3))) };
+    });
+  });
+  d.lobs["LOB Apoyo"] = SLOTS.map(() => { const c = rr(1800, 5400); return { conn: c, idle: c * 0.5, aux: mkAux(c * 0.5) }; });
+  d.over["LOB Apoyo"] = SLOTS.map(() => ({ frc: 0, req: 0, sched: 1 }));
+  const nAg = onp && segNames.length > 5 ? 30 : 20;
+  for (let i = 0; i < nAg; i++) {
+    d.agents.push({ name: "Agente " + pad(i + 1), sup: "Supervisor " + (1 + (i % 5)), seg: segNames[i % segNames.length], atn: Math.round(rr(28, 112)), aht: rr(250, 610), hold: rr(4, 60), ring: rr(0, 12), tab: Math.round(rr(0, 14)), bano: Math.round(rr(60, 2700)), brk: Math.round(rr(300, 2400)) });
+  }
+  segNames.forEach((n) => { d.mot[n] = MOTIVOS.map((m) => ({ m: m, vol: Math.round(rr(5, 120)), aht: rr(240, 600) })); });
+  TIP.forEach((g) => g[1].forEach((k) => { d.tip[g[0] + "|" + k] = SLOTS.map((s) => Math.round(shape(s.m) * rr(0, 8))); }));
+  return d;
+}
+
+/* ===================== Agregaciones ===================== */
+const RAW = ["ofr", "atn", "abnR", "abnF", "slg", "aht", "hold", "ring", "out", "asaS", "asaN", "conn", "idle", "frc", "req", "sched"];
+function blank() { const r = { aux: {} }; RAW.forEach((k) => { r[k] = 0; }); return r; }
+function addQ(r, c) { if (!c) return; r.ofr += c.ofr; r.atn += c.atn; r.abnR += c.abnR; r.abnF += c.abnF; r.slg += c.slg; r.aht += c.aht; r.hold += c.hold; r.ring += c.ring; r.out += c.out; if (c.ofr > 0) { r.asaS += c.asa; r.asaN++; } }
+function addL(r, c) { if (!c || !c.conn) return; r.conn += c.conn; r.idle += c.idle; for (const k in c.aux) r.aux[k] = (r.aux[k] || 0) + c.aux[k]; }
+function addO(r, c, mode) { if (!c) return; r.frc += c.frc * (mode === "atender" ? 0.94 : 1); r.req += c.req * (mode === "atender" ? 0.96 : 1); r.sched += c.sched; }
+function mergeInto(t, r) { RAW.forEach((k) => { t[k] += r[k]; }); for (const k in r.aux) t.aux[k] = (t.aux[k] || 0) + r.aux[k]; }
+function derive(r, onp, n) {
+  n = n || 1;
+  r.abn = r.abnR - r.abnF;
+  r.na = r.ofr > 0 ? r.atn / r.ofr : null;
+  r.abnp = r.ofr > 0 ? r.abn / r.ofr : null;
+  r.sl = r.atn > 0 ? r.slg / r.atn : null;
+  r.ahtv = r.atn > 0 ? r.aht / r.atn : null;
+  r.asa = r.asaN > 0 ? r.asaS / r.asaN : null;
+  r.o2f = r.frc > 0 ? r.ofr / r.frc : null;
+  r.h2f = r.frc > 0 ? r.atn / r.frc : null;
+  const hasO = r.sched > 0 || r.req > 0 || r.frc > 0;
+  r.schedv = hasO ? r.sched / n : null; r.reqv = hasO ? r.req / n : null;
+  r.auxT = Object.keys(r.aux).reduce((a, k) => a + r.aux[k], 0);
+  if (r.conn > 0) { r.pres = r.conn / 1800 / n; r.prod = (r.conn - r.auxT) / 1800 / n; r.avail = r.idle / r.conn; r.auxp = r.auxT / r.conn; }
+  else { r.pres = null; r.prod = null; r.avail = null; r.auxp = null; }
+  if (hasO && r.conn > 0 && r.sched > 0) { const a = (r.sched - r.conn / 1800) / r.sched; r.aus = onp ? Math.max(0, a) : a; } else r.aus = null;
+  return r;
+}
+const qOf = (p, seg) => Object.keys(p.queueMap).filter((q) => p.queueMap[q] === seg);
+const lobsOf = (p, seg) => Object.keys(p.lobMap).filter((l) => p.lobMap[l] === seg);
+const overOf = (p, seg, onp) => { const m = onp ? p.overDbMap : p.overXlsMap; return Object.keys(m).filter((l) => m[l] === seg); };
+const segList = (p, sel) => (sel === "Todos" ? p.segments.map((s) => s.name).filter((n) => p.segVis[n] !== false) : [sel]);
+const qName = (p, q) => (p.skills && p.skills[q] ? p.skills[q].nombre : q);
+function dayType(date, p) { const s = fdate(date); if (p.feriados.indexOf(s) >= 0) return "fer"; const w = date.getDay(); return (w === 0 || w === 6) ? "fin" : "lv"; }
+function visIdx(d, p) {
+  const hz = p.horario[dayType(d.date, p)] || { d: "", h: "" };
+  const from = hz.d && !isNaN(toMin(hz.d)) ? toMin(hz.d) : 0, to = hz.h && !isNaN(toMin(hz.h)) ? toMin(hz.h) : 1440;
+  const out = []; for (let i = 0; i <= d.closed && i < SLOTS.length; i++) { const m = SLOTS[i].m; if (m >= from && m < to) out.push(i); }
+  return out;
+}
+function segRows(d, p, sel) {
+  const onp = CAMPS[d.id].kind === "onp", names = segList(p, sel), idx = visIdx(d, p);
+  const rows = idx.map((i) => {
+    const r = blank();
+    names.forEach((n) => {
+      qOf(p, n).forEach((q) => { if (d.q[q]) addQ(r, d.q[q][i]); });
+      lobsOf(p, n).forEach((l) => { if (d.lobs[l]) addL(r, d.lobs[l][i]); });
+      overOf(p, n, onp).forEach((l) => { if (d.over[l]) addO(r, d.over[l][i], p.overMode); });
+    });
+    r.i = i; r.slot = SLOTS[i]; return derive(r, onp, 1);
+  });
+  return p.solo ? rows.filter((r) => r.ofr > 0 || r.frc > 0) : rows;
+}
+function sumRows(rows, d) { const t = blank(); rows.forEach((r) => mergeInto(t, r)); return derive(t, CAMPS[d.id].kind === "onp", Math.max(1, rows.length)); }
+function accumRows(d, p, sel) {
+  const onp = CAMPS[d.id].kind === "onp", idx = visIdx(d, p);
+  return segList(p, sel).map((n) => {
+    const kids = qOf(p, n).map((q) => { const r = blank(); if (d.q[q]) idx.forEach((i) => addQ(r, d.q[q][i])); derive(r, onp, 1); return { name: q, r: r }; });
+    const t = blank(); kids.forEach((k) => mergeInto(t, k.r)); derive(t, onp, 1);
+    return { name: n, r: t, kids: kids };
+  });
+}
+const agentsOf = (d, p, sel) => { const v = segList(p, sel); return d.agents.filter((a) => v.indexOf(a.seg) >= 0); };
+function supAgg(ags) {
+  const m = {};
+  ags.forEach((a) => { const s = m[a.sup] || (m[a.sup] = { name: a.sup, atn: 0, a: 0, h: 0, r: 0, tab: 0, bano: 0, brk: 0 }); s.atn += a.atn; s.a += a.aht * a.atn; s.h += a.hold * a.atn; s.r += a.ring * a.atn; s.tab += a.tab; s.bano += a.bano; s.brk += a.brk; });
+  return Object.keys(m).map((k) => { const s = m[k]; return { name: s.name, atn: s.atn, aht: s.atn ? s.a / s.atn : 0, hold: s.atn ? s.h / s.atn : 0, ring: s.atn ? s.r / s.atn : 0, tab: s.tab, bano: s.bano, brk: s.brk }; });
+}
+function motivosOf(d, p, sel) {
+  const m = {};
+  segList(p, sel).forEach((n) => (d.mot[n] || []).forEach((x) => { const e = m[x.m] || (m[x.m] = { m: x.m, vol: 0, a: 0 }); e.vol += x.vol; e.a += x.aht * x.vol; }));
+  const arr = Object.keys(m).map((k) => ({ m: k, vol: m[k].vol, aht: m[k].vol ? m[k].a / m[k].vol : 0 }));
+  const tot = arr.reduce((a, b) => a + b.vol, 0);
+  arr.forEach((x) => { x.pv = tot ? x.vol / tot : 0; });
+  return arr.sort((a, b) => b.vol - a.vol);
+}
+
+
+/* ===================== Estado de la aplicación ===================== */
+const S = {
+  view: "dashboard", camp: "A", theme: "light", mode: "demo", ptab: "segmentos", ctab: "fuente", utab: "pend", gloss: "OFR",
+  seg: "Todos", topAg: "15", topMot: "20", data: {}, loading: false, seed: Math.floor(Math.random() * 100000),
+  order: ["acum", "traf", "niv", "aux", "rsup", "rag", "motivo", "colas", "tipif"], collapsed: {}, dayOff: 0,
+  status: "", logs: [], users: null, selQ: {}, selL: {}, selO: {}, selSeg: "", selSk: "", selFer: "", selHist: "",
+  pmsg: "", updMsg: "", help: false, cal: null
+};
+const ctx = () => { const id = S.camp, C = CAMPS[id]; return { id: id, C: C, p: P[id], d: S.data[id] || null, onp: C.kind === "onp" }; };
+const dayDate = (off) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - off); return d; };
+const pp = (path) => esc(JSON.stringify(path));
+const chk = (path, label, val, dis) => '<label class="ck"><input type="checkbox" data-pp="' + pp(path) + '"' + (val ? " checked" : "") + (dis ? " disabled" : "") + "> " + esc(label) + "</label>";
+const gloss = (g) => g;
+
+/* ===================== Tablas ===================== */
+function cellH(c) {
+  if (c == null) return "<td></td>";
+  if (typeof c !== "object") return "<td>" + esc(c) + "</td>";
+  return "<td" + (c.cls ? ' class="' + c.cls + '"' : "") + (c.st ? ' style="' + c.st + '"' : "") + (c.tip ? ' title="' + esc(c.tip) + '"' : "") + (c.cs ? ' colspan="' + c.cs + '"' : "") + ">" + (c.h != null ? c.h : esc(c.t)) + "</td>";
+}
+function heat(head, rows) {
+  const th = head.map((h) => typeof h === "object" ? "<th" + (h.st ? ' style="' + h.st + '"' : "") + (h.cls ? ' class="' + h.cls + '"' : "") + ">" + esc(h.t) + "</th>" : "<th>" + esc(h) + "</th>").join("");
+  const tb = rows.map((r) => {
+    const arr = Array.isArray(r), cells = arr ? r : r.c;
+    return "<tr" + (!arr && r.cls ? ' class="' + r.cls + '"' : "") + (!arr && r.attr ? " " + r.attr : "") + ">" + cells.map(cellH).join("") + "</tr>";
+  }).join("");
+  return '<div class="tw"><table class="heat"><thead><tr>' + th + "</tr></thead><tbody>" + tb + "</tbody></table></div>";
+}
+const ph = (t) => '<div class="ph" style="padding:24px;font-size:13px">' + esc(t) + "</div>";
+const NODATA = "Sin datos para este segmento con la fuente actual. Pruebe con la fuente Red o Local, o revise que el Roster tenga agentes clasificados para este segmento.";
+
+/* ===================== Colores condicionales ===================== */
+const stSL = (v, ofr) => (v == null || !ofr) ? SK.neu : (v * 100 < 85 ? SK.bad : v * 100 <= 88 ? SK.warn : SK.good);
+const stO2F = (v) => { if (v == null) return SK.neu; const x = v * 100; return x < 90 ? SK.bad : x < 95 ? SK.warn : x <= 104 ? SK.good : x <= 105 ? SK.neu : SK.info; };
+const stASA = (v) => v == null ? SK.neu : (v <= 10 ? SK.good : SK.bad);
+const stAHT = (v) => v == null ? SK.neu : (v <= 540 ? SK.good : v <= 600 ? SK.warn : SK.bad);
+const stScale = (v, s) => "background:" + scale3(v, s.min, s.med, s.max, "#92D050", "#FFEB84", "#FF0000") + ";color:#000";
+const scaleOf = (vals) => ({ min: Math.min.apply(null, vals), med: pctile(vals, 0.5), max: Math.max.apply(null, vals) });
+const stLimit = (v, lim) => v <= lim ? "background:#C6EFCE;color:#006100" : "background:" + rgb(mix(hex("#FFEB84"), hex("#F8696B"), Math.min(1, (v - lim) / lim))) + ";color:#000";
+
+/* ===================== Tarjeta y bloques ===================== */
+function segSelHTML() {
+  const p = ctx().p;
+  if (p.segments.length < 2) return "";
+  const opts = ["Todos"].concat(p.segments.map((s) => s.name));
+  return '<select class="sm" data-chg="seg" aria-label="Segmento">' + opts.map((o) => "<option" + (o === S.seg ? " selected" : "") + ">" + esc(o) + "</option>").join("") + "</select>";
+}
+function topSel(key, vals) { return '<select class="sm" data-chg="' + key + '" aria-label="Top">' + vals.map((v) => '<option value="' + v + '"' + (S[key] === v ? " selected" : "") + ">" + (v === "Todos" ? "Todos" : "Top " + v) + "</option>").join("") + "</select>"; }
+function card(id, title, body, o) {
+  o = o || {}; const dis = o.empty ? " disabled" : "";
+  const btns = (o.pre || "") + '<button class="btn sm" data-act="copytxt"' + dis + ">📝 Copiar texto</button>" + '<button class="btn sm" data-act="copyimg"' + dis + ">📋 Copiar imagen</button>" + '<button class="btn sm" data-act="xlsx"' + dis + ">💾 Exportar XLSX</button>" + (o.post || "");
+  return '<div class="card" data-blk="' + id + '"><div class="chd"><div class="ct">' + title + '</div><div class="cb">' + btns + "</div></div>" + body + "</div>";
+}
+const segTitle = () => (S.seg === "Todos" ? "Todos" : esc(S.seg));
+
+function nums(r, bold) {
+  const b = bold ? "font-weight:700;background:var(--sub);" : "";
+  return [{ t: String(r.ofr), st: b }, { t: String(r.atn), st: b }, { t: String(r.out), st: b }, { t: String(r.abn), st: b }, { t: pc(r.na, 1), st: b }, { t: pc(r.abnp, 1), st: b }, { t: mmss(r.ahtv), st: b + stAHT(r.ahtv) }];
+}
+function bAcum(c) {
+  const rows = accumRows(c.d, c.p, S.seg), tot = blank(), body = [];
+  rows.forEach((sg) => {
+    mergeInto(tot, sg.r);
+    body.push([{ t: sg.name, cls: "sub" }].concat(nums(sg.r, true)));
+    sg.kids.forEach((k) => body.push([{ t: NB + qName(c.p, k.name), cls: "l" }].concat(nums(k.r))));
+  });
+  derive(tot, c.onp, 1);
+  body.push({ c: [{ t: "Total", cls: "l" }].concat(nums(tot)), cls: "tot" });
+  const table = rows.length ? heat(["Colas", "OFR", "ATN", "Out", "ABN", "%NA", "%ABN", "AHT Actual"].map((h, i) => i === 0 ? { t: h, cls: "l" } : h), body) : ph(NODATA);
+  return card("acum", esc(c.id ? "Campaña " + c.id : "") + " — Acumulado — " + segTitle(), table, { post: segSelHTML(), empty: !rows.length });
+}
+function bTraf(c) {
+  const rows = segRows(c.d, c.p, S.seg);
+  if (!rows.length) return card("traf", "Tráfico por Intervalo — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const W = Math.max(680, rows.length * 38 + 60), H = 240, L = 38, B = 48, T = 12;
+  const mx = Math.max(1, Math.max.apply(null, rows.map((r) => Math.max(r.atn, r.abn)))), ymax = Math.ceil(mx / 10) * 10 || 10;
+  const gw = (W - L - 10) / rows.length, ph1 = H - B - T;
+  let s = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;max-height:280px" role="img" aria-label="Tráfico por intervalo: atendidas y abandonadas por franja">';
+  for (let k = 0; k <= 4; k++) { const y = T + ph1 - ph1 * k / 4; s += '<line x1="' + L + '" x2="' + (W - 6) + '" y1="' + y + '" y2="' + y + '" stroke="var(--border)"/><text x="' + (L - 5) + '" y="' + (y + 3) + '" font-size="9" text-anchor="end" fill="var(--muted)">' + Math.round(ymax * k / 4) + "</text>"; }
+  rows.forEach((r, k) => {
+    const x = L + k * gw, h1 = ph1 * r.atn / ymax, h2 = ph1 * r.abn / ymax, bw = Math.max(5, gw * 0.34);
+    s += '<rect x="' + (x + gw * 0.12) + '" y="' + (T + ph1 - h1) + '" width="' + bw + '" height="' + h1 + '" fill="#2F5FDB"><title>' + r.slot.l + " ATN " + r.atn + "</title></rect>";
+    s += '<rect x="' + (x + gw * 0.12 + bw + 1) + '" y="' + (T + ph1 - h2) + '" width="' + bw + '" height="' + h2 + '" fill="#DC2626"><title>' + r.slot.l + " ABN " + r.abn + "</title></rect>";
+    s += '<text transform="translate(' + (x + gw * 0.5) + "," + (H - B + 12) + ') rotate(-55)" font-size="9" text-anchor="end" fill="var(--muted)">' + r.slot.l + "</text>";
+  });
+  s += "</svg>" + '<div class="small muted" style="display:flex;gap:16px"><span><b style="color:#2F5FDB">■</b> ATN</span><span><b style="color:#DC2626">■</b> ABN</span></div>';
+  return card("traf", "Tráfico por Intervalo — " + segTitle(), s, { post: segSelHTML() });
+}
+function nivCell(k, r, p, v, q, tot) {
+  switch (k) {
+    case "frc": return { t: r.frc > 0 ? num(r.frc, p.frc1 ? 1 : 0) : "" };
+    case "ofr": return { t: String(r.ofr) };
+    case "atn": return { t: String(r.atn) };
+    case "abn": return { t: String(r.abn) };
+    case "var": { if (tot || v == null) return { t: "" }; const a = v < q[0] ? ["▼", SK.bad] : v < q[1] ? ["↘", SK.warn] : v < q[2] ? ["↗", SK.warn] : ["▲", SK.good]; return { t: a[0] + " " + Math.round(v * 100) + "%", st: a[1] }; }
+    case "o2f": return { t: pc(r.o2f), st: stO2F(r.o2f) };
+    case "h2f": return { t: pc(r.h2f), st: stO2F(r.h2f) };
+    case "sl": return { t: pc(r.sl), st: stSL(r.sl, r.ofr) };
+    case "na": return { t: pc(r.na), st: stSL(r.na, r.ofr) };
+    case "asa": return { t: mmss(r.asa), st: stASA(r.asa) };
+    case "aht": return { t: mmss(r.ahtv), st: stAHT(r.ahtv) };
+    case "avail": return { t: pc(r.avail, 1) };
+    case "sched": return { t: num(r.schedv, tot ? 1 : 0) };
+    case "req": return { t: num(r.reqv, tot ? 1 : 0) };
+    case "pres": return { t: num(r.pres, 1) };
+    case "prod": return { t: num(r.prod, 1) };
+    case "aus": return { t: pc(r.aus, 1) };
+    case "aux": return { t: pc(r.auxp, 1) };
+  }
+  return { t: "" };
+}
+function bNiv(c) {
+  const rows = segRows(c.d, c.p, S.seg), cols = COLS.filter((x) => c.p.cols[x[0]] !== false);
+  if (!rows.length) return card("niv", "Campaña " + c.id + " — Niveles x Franja — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const vars = rows.map((r, k) => (k === 0 || rows[k - 1].ofr === 0) ? null : r.ofr / rows[k - 1].ofr - 1), vv = vars.filter((v) => v != null);
+  const q = [pctile(vv, 0.25), pctile(vv, 0.5), pctile(vv, 0.75)];
+  const body = rows.map((r, k) => [{ t: r.slot.l, cls: "l" }].concat(cols.map((x) => nivCell(x[0], r, c.p, vars[k], q, false))));
+  const t = sumRows(rows, c.d);
+  body.push({ c: [{ t: "Total", cls: "l" }].concat(cols.map((x) => nivCell(x[0], t, c.p, null, q, true))), cls: "tot" });
+  const next = SLOTS[c.d.closed + 1] ? '<div class="note">Franja en curso (excluida de tablas y totales): ' + SLOTS[c.d.closed + 1].l + "</div>" : "";
+  return card("niv", "Campaña " + c.id + " — Niveles x Franja — " + segTitle(), heat([{ t: "Franja", cls: "l" }].concat(cols.map((x) => x[1])), body) + next, { post: segSelHTML() });
+}
+function bAux(c) {
+  const rows = segRows(c.d, c.p, S.seg), cats = (c.onp ? AUX_ONP : AUX_NUBE).filter((k) => c.p.aux[k]);
+  if (!rows.length || !cats.length || !rows.some((r) => r.conn > 0)) return card("aux", "Auxiliares — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const g = "background:#A5A5A5;color:#fff";
+  const body = rows.map((r) => [{ t: r.slot.l, cls: "l" }].concat(cats.map((k) => ({ t: r.conn > 0 ? pc(r.aux[k] / r.conn, 2) : "" }))));
+  const t = sumRows(rows, c.d);
+  body.push({ c: [{ t: "Total", cls: "l" }].concat(cats.map((k) => ({ t: t.conn > 0 ? pc((t.aux[k] || 0) / t.conn, 2) : "" }))), cls: "tot" });
+  return card("aux", "Auxiliares — " + segTitle(), heat([{ t: "Franja", st: g, cls: "l" }].concat(cats.map((k) => ({ t: k, st: g }))), body), { post: segSelHTML() });
+}
+
+/* ----- Rankings ----- */
+function rkTable(title, hbg, head, rows) {
+  return '<div class="rk"><div class="rkt"' + (hbg ? ' style="background:' + hbg + ';color:#fff"' : "") + ">" + esc(title) + "</div>" + heat(head.map((h, i) => i === 0 ? { t: h, cls: "l" } : h), rows) + "</div>";
+}
+const limitN = (arr, n) => (n === "Todos" ? arr : arr.slice(0, +n));
+function groupTab(sups, ags) {
+  const rows = []; let tot = 0;
+  sups.forEach((s) => {
+    const kids = ags.filter((a) => a.sup === s.name).sort((a, b) => b.tab - a.tab); tot += s.tab;
+    rows.push([{ t: s.name, cls: "sub" }, { t: String(s.tab), st: "font-weight:700;background:var(--sub)" }]);
+    kids.forEach((a) => rows.push([{ t: NB + a.name, cls: "l" }, { t: String(a.tab) }]));
+  });
+  rows.push({ c: [{ t: "Total general", cls: "l" }, { t: String(tot) }], cls: "tot" });
+  return rows;
+}
+function bRsup(c) {
+  const ags = agentsOf(c.d, c.p, S.seg), sups = supAgg(ags);
+  if (!sups.length) return card("rsup", "Rankings supervisores — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const iv = (k) => c.p.imgRk[k] !== false;
+  const a = sups.slice().sort((x, y) => y.aht - x.aht), sa = scaleOf(a.map((x) => x.aht));
+  const h = sups.slice().sort((x, y) => y.hold - x.hold), sh = scaleOf(h.map((x) => x.hold));
+  const r = sups.slice().sort((x, y) => y.ring - x.ring), sr = scaleOf(r.map((x) => x.ring));
+  let out = rkTable("Ranking AHT x SUP", "#BF8F00", ["Supervisor", "ATN", "AHT"], a.map((x) => [{ t: x.name, cls: "l" }, String(x.atn), { t: mmss(x.aht), st: stScale(x.aht, sa) }]))
+    + rkTable("Ranking HOLD x SUP", null, ["Supervisor", "Hold"], h.map((x) => [{ t: x.name, cls: "l" }, { t: mmss(x.hold), st: stScale(x.hold, sh) }]))
+    + rkTable("Ranking RING (No resp) x SUP", null, ["Supervisor", "Prom.Ring"], r.map((x) => [{ t: x.name, cls: "l" }, { t: mmss(x.ring), st: stScale(x.ring, sr) }]));
+  if (!c.onp) out += '<div class="rk"><div class="rkt">Ranking Sin Tabular x SUPERVISOR</div>' + heat([{ t: "Supervisor / Agente", cls: "l" }, "Cant"], groupTab(sups.slice().sort((x, y) => y.tab - x.tab), ags)) + "</div>";
+  else { const b = sups.slice().sort((x, y) => y.bano - x.bano), mx = Math.max.apply(null, b.map((x) => x.bano)) || 1; out += rkTable("Ranking BAÑO x SUP", null, ["Supervisor", "Tiempo"], b.map((x) => [{ t: x.name, cls: "l" }, { t: hmmss(x.bano), st: "background:" + rgb(mix(hex("#FCFCFF"), hex("#F8696B"), x.bano / mx)) + ";color:#000" }])); }
+  void iv;
+  return card("rsup", "Rankings supervisores — " + segTitle(), '<div class="rkrow">' + out + "</div>", { post: segSelHTML() });
+}
+function bRag(c) {
+  const ags = agentsOf(c.d, c.p, S.seg);
+  if (!ags.length) return card("rag", "Rankings agentes — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const N = S.topAg, tag = " — Top " + (N === "Todos" ? ags.length : Math.min(+N, ags.length));
+  const a = limitN(ags.slice().sort((x, y) => y.aht - x.aht), N), sa = scaleOf(a.map((x) => x.aht));
+  const h = limitN(ags.slice().sort((x, y) => y.hold - x.hold), N), sh = scaleOf(h.map((x) => x.hold));
+  const r = limitN(ags.slice().sort((x, y) => y.ring - x.ring), N), sr = scaleOf(r.map((x) => x.ring));
+  let out = rkTable("Ranking AHT x AGENTE" + tag, "#2F75B5", ["Agente", "ATN", "AHT"], a.map((x) => [{ t: x.name, cls: "l" }, String(x.atn), { t: mmss(x.aht), st: stScale(x.aht, sa) }]))
+    + rkTable("Ranking HOLD x AGENTE" + tag, null, ["Agente", "Hold"], h.map((x) => [{ t: x.name, cls: "l" }, { t: mmss(x.hold), st: stScale(x.hold, sh) }]))
+    + rkTable("Ranking RING (No resp) x AGENTE" + tag, null, ["Agente", "Prom.Ring"], r.map((x) => [{ t: x.name, cls: "l" }, { t: mmss(x.ring), st: stScale(x.ring, sr) }]));
+  if (!c.onp) out += '<div class="rk"><div class="rkt">Ranking Sin Tabular x AGENTE' + esc(tag) + "</div>" + heat([{ t: "Agente", cls: "l" }, "Cant"], limitN(ags.slice().sort((x, y) => y.tab - x.tab), N).map((x) => [{ t: x.name, cls: "l" }, String(x.tab)])) + "</div>";
+  else {
+    out += rkTable("Ranking BAÑO x AGT" + tag, null, ["Agente", "Tiempo"], limitN(ags.slice().sort((x, y) => y.bano - x.bano), N).map((x) => [{ t: x.name, cls: "l" }, { t: hmmss(x.bano), st: stLimit(x.bano, 600) }]));
+    out += rkTable("Ranking Break x AGT" + tag, null, ["Agente", "Tiempo"], limitN(ags.slice().sort((x, y) => y.brk - x.brk), N).map((x) => [{ t: x.name, cls: "l" }, { t: hmmss(x.brk), st: stLimit(x.brk, 900) }]));
+  }
+  return card("rag", "Rankings agentes — " + segTitle(), '<div class="rkrow">' + out + "</div>", { post: segSelHTML() + topSel("topAg", ["15", "20", "Todos"]) });
+}
+function bMotivo(c) {
+  const m = motivosOf(c.d, c.p, S.seg);
+  if (!m.length) return card("motivo", "Motivo TIPIFICACIONES — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const arr = limitN(m, S.topMot), hb = "background:#5B9BD5;color:#fff";
+  return card("motivo", "Motivo TIPIFICACIONES — " + segTitle() + " — Top " + (S.topMot === "Todos" ? m.length : Math.min(+S.topMot, m.length)),
+    heat([{ t: "Motivo", st: hb, cls: "l" }, { t: "AHT", st: hb }, { t: "Vol", st: hb }, { t: "%Vol", st: hb }], arr.map((x) => [{ t: x.m, cls: "l" }, { t: mmss(x.aht), st: stAHT(x.aht) }, String(x.vol), pc(x.pv, 1)])),
+    { post: segSelHTML() + topSel("topMot", ["15", "20", "Todos"]) });
+}
+function bColas(c) {
+  const idx = visIdx(c.d, c.p), names = segList(c.p, S.seg), qs = [];
+  names.forEach((n) => qOf(c.p, n).forEach((q) => qs.push(q)));
+  if (!qs.length || !idx.length) return card("colas", "Interacciones / Colas — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  const hb = "background:#5B9BD5;color:#fff", vals = [];
+  const rows = qs.map((q) => { let t = 0; const cells = idx.map((i) => { const v = c.d.q[q] ? c.d.q[q][i].ofr : 0; t += v; if (v) vals.push(v); return v; }); return { q: q, cells: cells, t: t }; });
+  const sc = vals.length ? scaleOf(vals) : { min: 0, med: 0, max: 0 };
+  const body = rows.map((r) => [{ t: qName(c.p, r.q), cls: "l" }].concat(r.cells.map((v) => v ? { t: String(v), st: "background:" + scale3(v, sc.min, sc.med, sc.max, "#63BE7B", "#FFEB84", "#F8696B") + ";color:#000" } : { t: "" })).concat([{ t: String(r.t), st: "font-weight:700" }]));
+  const colT = idx.map((i, k) => rows.reduce((a, r) => a + r.cells[k], 0));
+  body.push({ c: [{ t: "Total", cls: "l" }].concat(colT.map((v) => ({ t: v ? String(v) : "" }))).concat([{ t: String(colT.reduce((a, b) => a + b, 0)) }]), cls: "tot" });
+  return card("colas", "Interacciones / Colas — " + segTitle(), heat([{ t: "Cola", st: hb, cls: "l" }].concat(idx.map((i) => ({ t: SLOTS[i].l, st: hb }))).concat([{ t: "Total", st: hb }]), body), { post: segSelHTML() });
+}
+function bTipif(c) {
+  const idx = visIdx(c.d, c.p), hb = "background:#5B9BD5;color:#fff", body = [];
+  if (!idx.length) return card("tipif", "Tipificaciones — " + segTitle(), ph(NODATA), { post: segSelHTML(), empty: true });
+  TIP.forEach((g) => {
+    const gs = idx.map((i) => g[1].reduce((a, k) => a + c.d.tip[g[0] + "|" + k][i], 0));
+    body.push([{ t: g[0], cls: "sub" }].concat(gs.map((v) => ({ t: v ? String(v) : "", st: "font-weight:700;background:var(--sub)" }))).concat([{ t: String(gs.reduce((a, b) => a + b, 0)), st: "font-weight:700;background:var(--sub)" }]));
+    g[1].forEach((k) => { const v = idx.map((i) => c.d.tip[g[0] + "|" + k][i]); body.push([{ t: NB + k, cls: "l" }].concat(v.map((x) => ({ t: x ? String(x) : "" }))).concat([{ t: String(v.reduce((a, b) => a + b, 0)) }])); });
+  });
+  return card("tipif", "Tipificaciones — " + segTitle(), heat([{ t: "Tipificación", st: hb, cls: "l" }].concat(idx.map((i) => ({ t: SLOTS[i].l, st: hb }))).concat([{ t: "Total", st: hb }]), body), { post: segSelHTML() });
+}
+const BLOCKS = { acum: bAcum, traf: bTraf, niv: bNiv, aux: bAux, rsup: bRsup, rag: bRag, motivo: bMotivo, colas: bColas, tipif: bTipif };
+
+/* ----- Cuadros exclusivos de campaña ----- */
+function exclRows(c, withErl) {
+  const out = [], f = c.p.exclF, segs = f === "Todos" || f === "Forecast u ofrecidas" ? c.p.segments.map((s) => s.name).filter((n) => c.p.segVis[n] !== false) : [f];
+  segs.forEach((n) => {
+    segRows(c.d, c.p, n).forEach((r) => {
+      if (f === "Forecast u ofrecidas" && !(r.frc > 0 || r.ofr > 0)) return;
+      const b2p = (r.avail != null && r.auxp != null) ? 1 - r.avail - r.auxp : null;
+      const row = [{ t: n, cls: "l" }, r.slot.l, String(r.ofr), String(r.atn), r.frc > 0 ? num(r.frc) : "", pc(r.frc > 0 ? r.ofr / r.frc : null), pc(r.frc > 0 ? r.atn / r.frc : null), { t: pc(r.na, 1), st: stSL(r.na, r.ofr) }, pc(r.abnp, 1), { t: pc(r.sl, 1), st: stSL(r.sl, r.ofr) }, mmss(r.ahtv), pc(r.auxp, 1), pc(r.avail, 1), pc(b2p, 1), num(r.pres, 1), num(r.reqv, 1), num(r.pres != null && r.reqv != null ? r.pres - r.reqv : null, 1)];
+      if (withErl) { const e = r.reqv != null ? r.reqv * 1.05 : null; row.push(num(r.prod, 1), num(e, 1), num(e != null ? e * 1.18 : null, 1), num(r.pres != null && e != null ? r.pres - e : null, 1)); }
+      out.push(row);
+    });
+  });
+  return out;
+}
+function exclFilter(c) {
+  const opts = ["Todos", "Forecast u ofrecidas"].concat(c.p.segments.map((s) => s.name));
+  return '<select class="sm" data-chg="exclF" aria-label="Filtro de cuadros exclusivos">' + opts.map((o) => "<option" + (o === c.p.exclF ? " selected" : "") + ">" + esc(o) + "</option>").join("") + "</select>";
+}
+function exclE(c) {
+  const head = ["LOB", "Franja", "Recibido", "Atendido", "Pronóstico", "% Tráf. rec.", "% Tráf. aten.", "NA %", "ABN %", "SL %", "AHT", "Aux", "Avail", "B2P", "Conectados", "Requeridos", "Diferencia"];
+  const mk = (id, title, erl) => { const rows = exclRows(c, erl); return card(id, title, rows.length ? '<div class="tw" style="max-height:340px">' + heat(head.concat(erl ? ["HC productivo", "Erlang P.", "Erlang Gross", "Dif. Erlang"] : []).map((h, i) => i === 0 ? { t: h, cls: "l" } : h), rows) + "</div>" : ph(NODATA), { pre: '<button class="btn sm" data-act="mailx">📧 Enviar mail</button>', post: exclFilter(c), empty: !rows.length }); };
+  return mk("exA", "Cuadro exclusivo A — desde las 07:30", false) + mk("exB", "Cuadro exclusivo B — con Erlang", true);
+}
+function exclF(c) {
+  const names = c.p.segments.map((s) => s.name).filter((n) => c.p.segVis[n] !== false), all = sumRows(segRows(c.d, c.p, "Todos"), c.d);
+  const tr = all.frc > 0 ? all.ofr / all.frc : null, ta = all.frc > 0 ? all.atn / all.frc : null, slc = (all.atn + all.abnF) > 0 ? all.slg / (all.atn + all.abnF) : null;
+  const slBad = all.sl != null && all.sl < 0.9 && (tr == null || tr < 1.1), trBlue = tr != null && tr > 1.1;
+  const sc = (l, v, cls) => '<div class="sc ' + (cls || "") + '"><div class="l">' + esc(l) + '</div><div class="v">' + v + "</div></div>";
+  const cards = '<div class="cardrow">' + sc("SL", pc(all.sl, 1), slBad ? "r" : "") + sc("SL corregido", pc(slc, 1), slBad ? "r" : "") + sc("Tráfico recibido", pc(tr, 1), trBlue ? "d" : "") + sc("Tráfico atendido", pc(ta, 1), trBlue ? "d" : "") + sc("Avail", pc(all.avail, 1)) + sc("Aux del día", pc(all.auxp, 1)) + "</div>";
+  const head = ["Franja", "Recibidas", "F. Saliente", "Contestadas", "Cont. en SLA", "Pronóstico", "% Tráf. rec.", "% Tráf. aten.", "% NDA", "% SL", "% SL'", "Curva SL", "ASA", "AHT'", "% Avail", "% Aux", "% AUS"];
+  const rowOf = (r, label, cls) => ({ cls: cls || "", c: [{ t: label, cls: "l" }, String(r.ofr), String(r.out), String(r.atn), String(r.slg), r.frc > 0 ? num(r.frc) : "", pc(r.frc > 0 ? r.ofr / r.frc : null), pc(r.frc > 0 ? r.atn / r.frc : null), pc(r.na, 1), { t: pc(r.sl, 1), st: stSL(r.sl, r.ofr) }, pc((r.atn + r.abnF) > 0 ? r.slg / (r.atn + r.abnF) : null, 1), "80%", mmss(r.asa), mmss(r.ahtv), pc(r.avail, 1), pc(r.auxp, 1), pc(r.aus, 1)] });
+  const body = [];
+  names.forEach((n) => { const rows = segRows(c.d, c.p, n); if (!rows.length) return; body.push({ c: [{ t: n + " — total", cls: "sub" }].concat(Array(16).fill({ t: "", cls: "sub" })), cls: "" }); body.push(rowOf(sumRows(rows, c.d), "Total " + n, "tot")); rows.forEach((r) => body.push(rowOf(r, r.slot.l))); });
+  return card("repF", "Reporte", cards + '<div class="tw" style="max-height:340px">' + heat(head.map((h, i) => i === 0 ? { t: h, cls: "l" } : h), body) + "</div>", { pre: '<button class="btn sm" data-act="mailx">📧 Enviar mail</button>', post: exclFilter(c) });
+}
+function cardsC(c) {
+  const t = sumRows(segRows(c.d, c.p, "Todos"), c.d);
+  const sc = (l, v) => '<div class="sc"><div class="l">' + esc(l) + '</div><div class="v">' + v + "</div></div>";
+  return '<div class="card"><div class="chd"><div class="ct">Cliente · Exclusiva de la campaña</div></div><div class="cardrow" style="grid-template-columns:repeat(4,minmax(0,1fr))">' + sc("Llamadas ofrecidas del día", String(t.ofr)) + sc("Nivel de servicio del día", pc(t.sl, 1)) + sc("Abandono del día", pc(t.abnp, 1)) + sc("AHT del día", mmss(t.ahtv)) + "</div></div>";
+}
+
+/* ===================== Dashboard ===================== */
+function chip(l, t, s, tip) { return '<div class="chip"><span class="lbl">' + esc(l) + '</span><span class="pill ' + s + '"' + (tip ? ' title="' + esc(tip) + '"' : "") + ">" + t + "</span></div>"; }
+function dayOptions() {
+  let s = "";
+  for (let k = 0; k < 31; k++) { const d = dayDate(k); s += '<option value="' + k + '"' + (k === S.dayOff ? " selected" : "") + ">" + DOW[d.getDay()] + " " + fdate(d) + (k === 0 ? " (hoy)" : "") + "</option>"; }
+  return s;
+}
+function headerCard(c) {
+  const d = c.d; let chips = "";
+  if (S.users.pend.length) chips += chip("Cruce con Roster", esc(S.users.pend.length + " usuario(s) sin cruzar"), "bad", "Hay usuarios de la descarga de agentes que no cruzan con el Roster. Resuélvalos en la vista Usuarios.");
+  const dt = d ? d.date : (c.onp ? dayDate(S.dayOff) : new Date());
+  chips += chip("Fecha", esc(fdateL(dt)), "neu");
+  if (d) {
+    const l = SLOTS[d.closed].l;
+    chips += d.ago > 60 ? chip("Última franja", esc(l) + "<br>hace " + Math.floor(d.ago / 60) + " h " + pad(d.ago % 60) + " min", "bad", "Pasó más de una hora desde que terminó la última franja de los datos: presione Actualizar datos para traer los nuevos.") : chip("Última franja", esc(l), "ok");
+    const wk = isoWeek(dt);
+    chips += c.C.rosterOk ? chip("Roster", esc("Roster_Sem" + wk + ".xlsx · Semana " + wk), "ok") : chip("Roster", "No es de esta semana", "bad", "El archivo de Roster cargado corresponde a otra semana distinta a la del reporte.");
+    chips += chip("Over", c.C.over === "xls" ? esc("Over_Sem" + wk + ".xlsx · Semana " + wk) : c.C.over === "db" ? "Base de datos" : "Base de datos + Excel", "ok", c.C.over === "both" ? "El pronóstico sale de la base de datos y se completa con el Excel semanal para los segmentos que la base no trae." : "");
+    chips += chip("Actualizado", pad(d.stamp.getHours()) + ":" + pad(d.stamp.getMinutes()) + ":" + pad(d.stamp.getSeconds()), "ok");
+  } else chips += chip("Actualizado", "Sin datos", "neu");
+  const day = c.onp ? '<div class="dayrow"><label>Día <select data-chg="day">' + dayOptions() + '</select></label><button class="btn" data-act="cal">Personalizar fecha</button></div>' : "";
+  const hidden = c.p.segments.filter((s) => c.p.segVis[s.name] === false).map((s) => s.name);
+  return '<div class="card"><div class="hdr"><div><h1 class="pt">Campaña ' + c.id + '</h1><div class="muted">Reporte del día — Ranking y Niveles</div>' + day + '</div><div class="chips">' + chips + "</div></div></div>" +
+    (hidden.length ? '<div class="note" style="margin:-6px 0 8px">Segmentos ocultos: ' + esc(hidden.join(", ")) + ". Se pueden mostrar en Parámetros → Tablas.</div>" : "");
+}
+function kpiRow(c) {
+  const t = sumRows(segRows(c.d, c.p, S.seg), c.d);
+  const it = [["📞", "#2F5FDB", "Interacciones", String(t.ofr)], ["🎧", "#7C3AED", "Atención", pc(t.na, 1)], ["⏱", "#059669", "Nivel de Servicio", pc(t.sl, 1)], ["⚠", "#DC2626", "ABN", pc(t.abnp, 1)], ["⏳", "#D97706", "AHT", mmss(t.ahtv)]];
+  if (c.p.cols.aus !== false) it.push(["📅", "#6B7280", "Ausentismo", pc(t.aus, 1)]);
+  it.push(["🛠", "#0891B2", "AUX", pc(t.auxp, 1)]);
+  const k = it.map((x) => '<div class="kpi"><div class="ci" style="background:' + x[1] + '"><span style="filter:brightness(0) invert(1)">' + x[0] + '</span></div><div><div class="kl">' + x[2] + '</div><div class="kv">' + x[3] + "</div></div></div>").join("");
+  return '<div class="krow"><div class="kpis" style="grid-template-columns:repeat(' + it.length + ',minmax(0,1fr))">' + k + "</div>" + (c.p.segments.length > 1 ? '<div style="align-self:flex-start">' + segSelHTML() + "</div>" : "") + "</div>";
+}
+function blockWrap(id, inner, i, n) {
+  const col = S.collapsed[id], cp = (id === "niv" && ctx().p.segments.length >= 2) || id === "rsup" || id === "rag";
+  return '<div class="blk"><div class="bctl"><span class="muted small">' + (col ? "(oculto)" : "") + '</span><button class="btn sm" data-act="mv" data-id="' + id + '" data-d="-1"' + (i === 0 ? " disabled" : "") + '>▲</button><button class="btn sm" data-act="mv" data-id="' + id + '" data-d="1"' + (i === n - 1 ? " disabled" : "") + '>▼</button><button class="btn sm" data-act="col" data-id="' + id + '">' + (col ? "Mostrar ▸" : "Ocultar ▾") + "</button>" + (cp ? '<button class="btn sm" data-act="copyblk">Copiar imagen del bloque</button>' : "") + "</div>" + (col ? "" : inner) + "</div>";
+}
+function viewDashboard() {
+  const c = ctx(), hd = headerCard(c);
+  if (S.loading) return hd + '<div class="ph">Cargando Campaña ' + c.id + "…</div>";
+  if (!c.d) return hd + '<div class="ph">Campaña ' + c.id + ': presione Actualizar datos para cargarlos.<br><br><button class="btn act" data-act="upd">⟳ Actualizar datos</button></div>';
+  let h = hd + kpiRow(c);
+  if (c.C.cards) h += cardsC(c);
+  if (c.C.excl === "E") h += exclE(c);
+  if (c.C.excl === "F") h += exclF(c);
+  const list = S.order.filter((id) => !(c.onp && (id === "motivo" || id === "tipif")));
+  list.forEach((id, i) => { let inner; try { inner = BLOCKS[id](c); } catch (e) { inner = '<div class="card"><div class="ph">No se pudo mostrar este cuadro: ' + esc(e && e.name) + " — ver el registro.</div></div>"; } h += blockWrap(id, inner, i, list.length); });
+  return h;
+}
+
+
+/* ===================== Parámetros ===================== */
+const rowSel = (sel, attrs) => ({ cls: (sel ? "rsel " : "") + "clk", attr: attrs });
+function selOpts(p, extra) { return p.segments.map((s) => '<option value="' + esc(s.name) + '">' + esc(s.name) + "</option>").join("") + (extra ? '<option value="__none__">' + esc(extra) + "</option>" : ""); }
+const cuenta = (v) => (v == null ? "— no se cuenta —" : v);
+function tabSeg(c) {
+  const p = c.p;
+  const sRows = p.segments.map((s, i) => ({ c: [String(i + 1), { t: s.name, cls: "l" }, s.origen, String(qOf(p, s.name).length)], cls: (S.selSeg === s.name ? "rsel " : "") + "clk", attr: 'data-act="selseg" data-v="' + esc(s.name) + '"' }));
+  const created = p.segments.some((s) => s.name === S.selSeg && s.origen === "Creado");
+  const cSeg = '<div class="card"><div class="ct" style="margin-bottom:6px">Segmentos</div>' + heat(["N°", { t: "Segmento", cls: "l" }, "Origen", "Colas"], sRows) + '<div class="row"><input type="text" id="newseg" maxlength="30" placeholder="Nombre del segmento" style="width:220px"><button class="btn" data-act="addseg">Agregar</button><button class="btn" data-act="delseg"' + (created ? "" : " disabled") + ">Eliminar</button></div></div>";
+  let cQ;
+  if (!c.d) cQ = '<div class="card"><div class="ct">Colas descargadas — elija filas, elija dónde cuentan y presione Aplicar</div><p class="muted">Presione Actualizar datos para ver todas las colas que traen los crudos.</p></div>';
+  else {
+    const rows = Object.keys(p.queueMap).map((q, i) => ({ c: [String(i + 1), { t: qName(p, q), cls: "l" }, queueOffer(c, q), cuenta(p.queueMap[q]), p.queueOrigin[q] || "Por defecto"], cls: (S.selQ[q] ? "rsel " : "") + "clk", attr: 'data-act="selq" data-v="' + esc(q) + '"' }));
+    cQ = '<div class="card"><div class="ct" style="margin-bottom:6px">Colas descargadas — elija filas, elija dónde cuentan y presione Aplicar</div><div class="row"><span>Contar en:</span><select id="cq">' + selOpts(p, "No contar") + '</select><button class="btn act" data-act="applyq">Aplicar</button><button class="btn" data-act="defq">Por defecto</button></div>' + heat(["N°", { t: "Cola", cls: "l" }, "Oferta", "Segmento", "Origen"], rows) + "</div>";
+  }
+  let tree = "";
+  p.segments.forEach((s) => { tree += '<div class="gr">' + esc(s.name) + "</div>"; qOf(p, s.name).forEach((q, i) => { tree += '<div class="it" style="cursor:default">' + (i + 1) + ". " + esc(qName(p, q)) + "</div>"; }); });
+  const none = qOf(p, null);
+  tree += '<div class="gr">No se cuentan</div>' + none.map((q, i) => '<div class="it" style="cursor:default">' + (i + 1) + ". " + esc(qName(p, q)) + "</div>").join("");
+  return '<div class="grid2"><div>' + cSeg + cQ + '</div><div class="card"><div class="ct" style="margin-bottom:6px">Dónde va cada cola</div><div class="tree">' + tree + "</div></div></div>";
+}
+function queueOffer(c, q) { return c.d && c.d.q[q] ? String(c.d.q[q].slice(0, c.d.closed + 1).reduce((a, x) => a + x.ofr, 0)) : "—"; }
+function tabLob(c) {
+  const p = c.p;
+  if (!c.d) return '<div class="card"><div class="ct">LOB del Roster — elija filas, elija dónde cuentan y presione Aplicar</div><p class="muted">Presione Actualizar datos para ver los LOB que trae el Roster.</p></div>';
+  const rows = Object.keys(p.lobMap).map((l) => ({ c: [{ t: l, cls: "l" }, String(8 + (hs(l) % 25)), cuenta(p.lobMap[l]), p.lobOrigin[l] || "Por defecto"], cls: (S.selL[l] ? "rsel " : "") + "clk", attr: 'data-act="selL" data-v="' + esc(l) + '"' }));
+  return '<div class="card"><div class="ct" style="margin-bottom:6px">LOB del Roster — elija filas, elija dónde cuentan y presione Aplicar</div><div class="row"><span>Contar en:</span><select id="cl">' + selOpts(p, "No contar") + '</select><button class="btn act" data-act="applyL">Aplicar</button><button class="btn" data-act="defL">Por defecto</button></div>' + heat([{ t: "LOB (Roster)", cls: "l" }, "Agentes", "Cuenta en", "Origen"], rows) + "</div>";
+}
+function tabOver(c) {
+  const p = c.p, wk = isoWeek(dayDate(0));
+  const xr = Object.keys(p.overXlsMap).map((l, i) => ({ c: [{ t: l, cls: "l" }, p.overMode === "100" ? "100 %" : "A Atender", "F-" + String.fromCharCode(71 + (i % 4)), "Pronóstico, Req, Sched", cuenta(p.overXlsMap[l]), p.overOrigin[l] || "Por defecto"], cls: (S.selO["x:" + l] ? "rsel " : "") + "clk", attr: 'data-act="selO" data-v="x:' + esc(l) + '"' }));
+  const dr = Object.keys(p.overDbMap).map((l) => ({ c: [{ t: l, cls: "l" }, String(l === "LOB Apoyo" ? 0 : 20 + (hs(l) % 8)), cuenta(p.overDbMap[l]), p.overOrigin[l] || "Por defecto", "Disponible"], cls: (S.selO["d:" + l] ? "rsel " : "") + "clk", attr: 'data-act="selO" data-v="d:' + esc(l) + '"' }));
+  return '<div class="card"><div class="muted small">Archivo: ' + esc("Over_Sem" + wk + ".xlsx") + '</div><div class="row"><label class="ck"><input type="radio" name="overMode" data-pp="' + pp(["overMode"]) + '" value="100"' + (p.overMode === "100" ? " checked" : "") + "> 100 % (por defecto)</label>" +
+    '<label class="ck"><input type="radio" name="overMode" data-pp="' + pp(["overMode"]) + '" value="atender"' + (p.overMode === "atender" ? " checked" : "") + "> A Atender</label></div>" +
+    '<div class="row"><span>Contar en:</span><select id="co">' + selOpts(p, "No contar") + '</select><button class="btn act" data-act="applyO">Aplicar</button><button class="btn" data-act="defO">Por defecto</button></div>' +
+    '<div class="sec">Over del archivo semanal (Excel)</div>' + heat([{ t: "LOB (Excel)", cls: "l" }, "Bloque", "Columnas", "Se lee", "Cuenta en", "Origen"], xr) +
+    '<div class="sec">Over de la base de datos</div>' + heat([{ t: "LOB", cls: "l" }, "Franjas hoy", "Cuenta en", "Origen", "Estado"], dr) + "</div>";
+}
+function tabMail(c) {
+  const m = c.p.mail;
+  const body = [["acum", "Acumulado"], ["traf", "Gráfico de tráfico"], ["niv", "Niveles x Franja"], ["aux", "Detalle AUX"], ["rsup", "Rankings Supervisores"], ["rag", "Rankings Agentes"], ["ingr", "Ingresos por franja por colas"]];
+  if (!c.onp) body.push(["tipo", "Tipologías (Motivo / Tipificación)"]);
+  const adj = [["acum", "Reporte Acumulado (.xlsx)"]]; if (!c.onp) adj.push(["tipif", "Tipificaciones (.xlsx)"]);
+  return '<div class="card"><div class="ct" style="margin-bottom:6px">Mail — qué lleva el «Enviar mail» de la campaña (tildado = se envía)</div><div class="cols2"><div><div class="sec">Cuerpo</div>' + body.map((x) => chk(["mail", "body", x[0]], x[1], m.body[x[0]])).join("<br>") + '</div><div><div class="sec">Adjuntos</div>' + adj.map((x) => chk(["mail", "adj", x[0]], x[1], m.adj[x[0]])).join("<br>") + "</div></div>" +
+    '<div class="sec">Segmentos que van en el mail</div><div class="ckgrid" style="--n:3">' + c.p.segments.map((s) => chk(["mail", "segs", s.name], s.name, m.segs[s.name] !== false)).join("") + '</div><div class="sec">Tráfico por intervalo: de qué segmentos va el gráfico</div><div class="ckgrid" style="--n:3">' + c.p.segments.map((s) => chk(["mail", "traf", s.name], s.name, m.traf[s.name] !== false)).join("") + "</div>" +
+    '<div class="sec">Rankings que van en el mail (por defecto solo el AHT de supervisores y de agentes)</div><div class="ckgrid" style="--n:4">' + RANKS.filter((r) => !(c.onp && r[0].indexOf("tab") === 0)).map((r) => chk(["mail", "rk", r[0]], r[1], m.rk[r[0]])).join("") + "</div></div>";
+}
+function tabTablas(c) {
+  const p = c.p, cats = c.onp ? AUX_ONP : AUX_NUBE;
+  const left = '<div class="card"><div class="ct">Tabla AUX — categorías que se muestran</div><div class="ckgrid" style="--n:2">' + cats.map((k) => chk(["aux", k], k === "Fuera de cola" ? "Fuera de cola (extra, apagada por defecto)" : k, p.aux[k])).join("") + "</div></div>" +
+    '<div class="card"><div class="ct">Niveles por franja — columnas que se muestran</div><div class="note">La columna Franja siempre está. Destildar %AUS también quita el KPI Ausentismo.</div><div class="ckgrid" style="--n:6">' + COLS.map((k) => chk(["cols", k[0]], k[1], p.cols[k[0]] !== false)).join("") + "</div>" + chk(["frc1"], "FRC con 1 decimal", p.frc1) + "</div>" +
+    '<div class="card"><div class="ct">Tipos de medios que se cuentan (tildado = se cuenta)</div><div class="ckgrid" style="--n:3">' + MEDIOS.map((m) => chk(["medios", m], m, p.medios[m] !== false)).join("") + "</div></div>";
+  let right = '<div class="card"><div class="ct">Segmentos que se ven en el dashboard (tildado = se ve)</div>' + p.segments.map((s) => chk(["segVis", s.name], s.name, p.segVis[s.name] !== false)).join("<br>") + "</div>" +
+    '<div class="card"><div class="ct">Imagen por bloque: Niveles por franja</div>' + p.segments.filter((s) => p.segVis[s.name] !== false).map((s) => chk(["imgNiv", s.name], s.name, p.imgNiv[s.name] !== false)).join("<br>") + "</div>" +
+    '<div class="card"><div class="ct">Imagen por bloque: rankings</div>' + RANKS.filter((r) => !(c.onp && r[0].indexOf("tab") === 0)).map((r) => chk(["imgRk", r[0]], r[1], p.imgRk[r[0]] !== false)).join("<br>") + "</div>";
+  if (c.id === "F") right += '<div class="card"><div class="ct">Medios que se cuentan de cada archivo</div><table class="heat"><thead><tr><th class="l">Medio</th><th>Archivo de entrada</th><th>Archivo de salida</th></tr></thead><tbody>' + MEDIOS.map((m) => '<tr><td class="l">' + m + "</td><td>" + chk(["fmed", "in", m], (40 + hs(m) % 300) + " filas", p.fmed.in[m]) + "</td><td>" + chk(["fmed", "out", m], (5 + hs(m) % 60) + " filas", p.fmed.out[m]) + "</td></tr>").join("") + "</tbody></table></div>";
+  return '<div class="cols2"><div>' + left + "</div><div>" + right + "</div></div>";
+}
+function tabHorario(c) {
+  const h = c.p.horario, row = (k, l) => '<tr><td class="l">' + l + '</td><td><input type="text" id="hz_' + k + '_d" value="' + esc(h[k].d) + '" size="7" maxlength="5" placeholder="HH:MM"></td><td><input type="text" id="hz_' + k + '_h" value="' + esc(h[k].h) + '" size="7" maxlength="5" placeholder="HH:MM"></td></tr>';
+  return '<div class="card"><div class="ct">Horario de la campaña — hasta qué franja trae el reporte (vacío = todas las franjas)</div><table class="heat" style="margin:8px 0"><thead><tr><th class="l"></th><th>Desde</th><th>Hasta</th></tr></thead><tbody>' + row("lv", "Lunes a viernes") + row("fin", "Sábado y domingo") + row("fer", "Feriados") + '</tbody></table><div class="row"><button class="btn act" data-act="savehz">Guardar horario</button></div><div class="note">Una franja entra si empieza desde «Desde» y antes de «Hasta» (08:00 a 20:00 trae de la 08:00 a la 19:30). «Hasta» 24:00 = cierre del día.</div>' +
+    chk(["solo"], "Traer solo las franjas con llamadas ofrecidas (OFR > 0) o con pronóstico (Forecast > 0)", c.p.solo) +
+    '<div class="sec">Feriados</div><div class="row"><input type="text" id="newfer" placeholder="DD/MM/AAAA" size="12" maxlength="10"><button class="btn" data-act="addfer">Agregar</button><button class="btn" data-act="delfer"' + (S.selFer ? "" : " disabled") + ">Quitar</button></div>" +
+    heat([{ t: "Fecha", cls: "l" }], c.p.feriados.length ? c.p.feriados.map((f) => ({ c: [{ t: f, cls: "l" }], cls: (S.selFer === f ? "rsel " : "") + "clk", attr: 'data-act="selfer" data-v="' + esc(f) + '"' })) : [[{ t: "Sin feriados cargados", cls: "em l" }]]) + "</div>";
+}
+function tabSkills(c) {
+  const p = c.p;
+  if (!c.onp) return '<div class="card"><p class="muted">Esta campaña no lee skills de la central.</p></div>';
+  const rows = Object.keys(p.skills).map((q) => ({ c: [{ t: q, cls: "l" }, "Skill " + q.replace("Skill_", "") + " (central)", p.skills[q].nombre, p.skills[q].origen], cls: (S.selSk === q ? "rsel " : "") + "clk", attr: 'data-act="selsk" data-v="' + esc(q) + '"' }));
+  return '<div class="card"><div class="row"><label>Nombre: <input type="text" id="skname" size="34" maxlength="40"></label><button class="btn act" data-act="setsk">Cambiar</button><button class="btn" data-act="defsk">Por defecto</button></div>' + heat([{ t: "Skill", cls: "l" }, "Nombre de la central", "Se muestra", "Origen"], rows) + "</div>";
+}
+function viewParams() {
+  const c = ctx(), tabs = [["segmentos", "Segmentos y colas"], ["lob", "LOB del Roster"], ["over", "Over / Under"], ["mail", "Mail"], ["tablas", "Tablas"], ["horario", "Horario"]];
+  if (c.onp) tabs.push(["skills", "Nombres de skills"]);
+  if (!tabs.some((t) => t[0] === S.ptab)) S.ptab = "segmentos";
+  const fn = { segmentos: tabSeg, lob: tabLob, over: tabOver, mail: tabMail, tablas: tabTablas, horario: tabHorario, skills: tabSkills }[S.ptab];
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Parámetros</h1><div class="muted">Campaña ' + c.id + ": qué colas cuenta cada segmento</div></div><div><button class=\"btn\" data-act=\"restore\">Restaurar valores por defecto</button></div></div><div class=\"note\">" + esc(S.pmsg || "Los cambios se aplican y se guardan al instante.") + '</div><div class="tabs" role="tablist">' + tabs.map((t) => '<button class="' + (S.ptab === t[0] ? "on" : "") + '" data-act="tab" data-s="ptab" data-v="' + t[0] + '">' + t[1] + "</button>").join("") + "</div>" + fn(c);
+}
+
+/* ===================== Configuración ===================== */
+function viewConfig() {
+  const c = ctx(), p = c.p;
+  p.cfgMail = p.cfgMail || { to: "equipo@ejemplo.com", cc: "supervision@ejemplo.com", subj: "Reporte del día {fecha} {hora} — Campaña " + c.id, name: "Reporte {fecha} {hhmm}" };
+  p.db = p.db || { server: "servidor-demo", user: "usuario_lectura" };
+  const tabs = [["fuente", "Fuente de datos"], ["archivos", "Archivos"], ["mail", "Mail de la campaña"]]; if (c.onp) tabs.push(["db", "Base de datos"]);
+  if (!tabs.some((t) => t[0] === S.ctab)) S.ctab = "fuente";
+  const radio = (v, l) => '<label class="ck"><input type="radio" name="mode" data-chg="mode" value="' + v + '"' + (S.mode === v ? " checked" : "") + "> " + l + "</label>";
+  const folder = (l, v, dis) => '<div class="row"><span style="width:90px">' + l + '</span><input type="text" readonly size="38" value="' + esc(dis ? "No aplica en esta campaña" : v) + '"><button class="btn sm" data-act="simul" data-m="Abrir carpeta (simulado en la demo)"' + (dis ? " disabled" : "") + ">Abrir carpeta</button></div>";
+  let body = "";
+  if (S.ctab === "fuente") {
+    body = '<div class="card"><div class="ct" style="margin-bottom:6px">Fuente de datos</div><div class="row">' + radio("red", "Red") + radio("local", "Local") + radio("demo", "Demo") + '</div><div class="note">En modo Demo la maqueta usa datos ficticios generados al azar. Red y Local solo cambian el texto de la fuente en esta demostración.</div>' +
+      '<div class="sec">Carpetas locales (MODO LOCAL)</div>' + folder("Crudos", "C:\\Reporte\\Local\\Crudos") + folder("Roster", "C:\\Reporte\\Local\\Roster") + folder("Over", "C:\\Reporte\\Local\\Over") +
+      '<div class="row"><input type="text" size="38" placeholder="Carpeta local"><button class="btn" data-act="simul" data-m="Elegir carpeta (simulado en la demo)">Elegir carpeta…</button></div>' +
+      '<div class="sec">Carpetas en la red (MODO RED)</div>' + folder("Crudos", "\\\\servidor\\campaña\\Crudos", c.onp) + folder("Roster", "\\\\servidor\\campaña\\Roster", c.onp) + folder("Over", "\\\\servidor\\campaña\\Over", c.onp) +
+      '<div class="row"><input type="text" size="38" placeholder="Ruta de red"><button class="btn" data-act="simul" data-m="Elegir carpeta (simulado en la demo)">Elegir carpeta…</button></div><div class="note">Configuración compartida de la campaña · origen: valores por defecto de la demo.</div></div>' +
+      '<div class="row"><button class="btn act" data-act="simul" data-m="Configuración guardada (simulado en la demo)">Guardar</button><button class="btn" data-act="simul" data-m="Valores por defecto restaurados (simulado)">Restaurar por defecto</button></div>';
+  } else if (S.ctab === "archivos") {
+    const E = c.id === "E", F = c.id === "F", nube = !c.onp;
+    const f = [["Descarga de colas", nube && !E && !F, "Volumen y niveles por cola y franja", "Crudos", "Sí"], ["Descarga de colas — entrada y salida", F, "Volumen y niveles de entrada y de salida", "Crudos", "Sí"], ["Descarga de agentes", nube, "Tiempo conectado y auxiliares de cada agente", "Crudos", "Sí"], ["Descarga de duraciones (AHT)", nube && !E, "Duración de cada llamada atendida", "Crudos", "Sí"], ["Descarga de interacciones", nube, E ? "Todos los LOB en un solo archivo" : "Motivos, tipificaciones y colas por franja", "Crudos", E ? "Sí" : "No"], ["Roster semanal", true, "Agentes, LOB y turno de cada persona", "Roster", "Sí"], ["Over/Under semanal", c.C.over !== "db", "Pronóstico, requeridos y planificados", "Over", "Sí"], ["Consulta a la base de datos", c.onp || c.C.over !== "xls", "Lectura de solo SELECT", "Base de datos", "Sí"]];
+    body = '<div class="card"><div class="ct">Archivos de la campaña</div><div class="b" style="margin:4px 0">' + (c.onp ? "Motor de datos: consulta a base de datos" : "Motor de datos: descargas CSV de la central") + "</div>" + heat(["Usa", { t: "Archivo", cls: "l" }, { t: "Para qué se usa", cls: "l" }, "Dónde está", "¿Es necesario?"], f.map((x) => ({ c: [x[1] ? "☑" : "☐", { t: x[0], cls: "l" }, { t: x[1] ? x[2] : "No se usa en esta campaña", cls: "l" }, x[1] ? x[3] : "—", x[1] ? x[4] : "—"], cls: x[1] ? "" : "em" }))) + '<div class="note">Esta campaña NO usa: ' + esc(f.filter((x) => !x[1]).map((x) => x[0]).join(", ") || "—") + ".</div></div>";
+  } else if (S.ctab === "mail") {
+    const fld = (l, k) => '<label>' + l + '</label><input type="text" data-pp="' + pp(["cfgMail", k]) + '" value="' + esc(p.cfgMail[k]) + '">';
+    body = '<div class="card"><div class="frm">' + fld("Para (To)", "to") + fld("CC (separados por «;»)", "cc") + fld("Asunto", "subj") + fld("Nombre del reporte (también nombre de los adjuntos)", "name") + '</div><div class="note">Puede usar {fecha} (dd/mm), {hora} (HH:MM) y {hhmm} (HHMM) en el asunto y en el nombre.</div><div class="row"><button class="btn act" data-act="simul" data-m="Mail guardado (simulado en la demo)">Guardar</button><button class="btn" data-act="simul" data-m="Destinatarios por defecto restaurados (simulado)">Restaurar destinatarios por defecto</button></div></div>';
+  } else {
+    body = '<div class="card"><div class="ct" style="margin-bottom:6px">Conexión a la base de datos</div><div class="frm"><label>Servidor</label><input type="text" data-pp="' + pp(["db", "server"]) + '" value="' + esc(p.db.server) + '"><label>Usuario</label><input type="text" data-pp="' + pp(["db", "user"]) + '" value="' + esc(p.db.user) + '"><label>Clave</label><input type="password" value="" placeholder="••••••••" autocomplete="off"></div><div class="row"><button class="btn act" data-act="simul" data-m="Conexión guardada (simulado: la demo no se conecta a ninguna base)">Guardar conexión</button></div><div class="note">En el programa real la clave se guarda cifrada para el usuario de Windows de la PC. Esta demo no guarda ni usa ninguna clave.</div></div>';
+  }
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Configuración</h1><div class="muted">Fuente de datos — Campaña ' + c.id + '</div></div></div><div class="tabs" role="tablist">' + tabs.map((t) => '<button class="' + (S.ctab === t[0] ? "on" : "") + '" data-act="tab" data-s="ctab" data-v="' + t[0] + '">' + t[1] + "</button>").join("") + "</div>" + body;
+}
+
+/* ===================== Usuarios ===================== */
+function initUsers() {
+  S.users = {
+    pend: [{ u: "usuario_a07", sug: "Agente 07" }, { u: "usuario_a12", sug: "Agente 12" }, { u: "usuario_a15", sug: "Agente 15" }],
+    her: [{ u: "usuario_a03", r: "Agente 03", id: "33603", c: "heredado de la semana anterior · a revisar", by: "", chk: false }, { u: "usuario_a09", r: "Agente 09", id: "33609", c: "heredado de la semana anterior · a revisar", by: "", chk: false }],
+    res: [["usuario_a01", "Agente 01", "33601", "automático · por ID", ""], ["usuario_a02", "Agente 02", "33602", "automático · por ID", ""], ["usuario_a04", "Agente 04", "33604", "cruce manual", "demo.user"], ["usuario_a05", "Agente 05", "33605", "automático · por ID", ""], ["usuario_a06", "Agente 06", "33606", "automático · por ID", ""], ["usuario_a08", "Agente 08", "33608", "cruce manual", "demo.sup"]].map((x) => ({ u: x[0], r: x[1], id: x[2], c: x[3], by: x[4], chk: false })),
+    roster: [["33701", "ag.nuevo1", "Agente 21", "LOB Ventas", "08:00–17:00", 12], ["33702", "ag.nuevo2", "Agente 22", "LOB Soporte", "09:00–18:00", 0], ["33703", "ag.nuevo3", "Agente 23", "LOB Soporte", "10:00–19:00", 7]]
+  };
+}
+function viewUsers() {
+  const U = S.users, tot = U.res.length + U.her.length + U.pend.length;
+  const tile = (l, v) => '<div class="tile">' + v + "<span>" + l + "</span></div>";
+  const tabs = [["pend", "Pendientes de cruzar (" + U.pend.length + ")"], ["her", "Heredados a revisar (" + U.her.length + ")"], ["res", "Resueltos (" + U.res.length + ")"]];
+  const opts = (sel) => ["Cruzar con el Roster…", "Agente 07", "Agente 12", "Agente 15", "Agente 21", "Agente 22", "Agente 23"].map((o) => "<option" + (o === sel ? " selected" : "") + ">" + o + "</option>").join("");
+  let body = "";
+  if (S.utab === "pend") {
+    const left = U.pend.length ? U.pend.map((x, i) => '<div class="row" style="border-bottom:1px solid var(--border);padding-bottom:6px"><b style="width:120px">' + esc(x.u) + '</b><select>' + opts("Cruzar con el Roster…") + '</select><button class="btn sm" data-act="cruz" data-i="' + i + '">Sí, es ' + esc(x.sug) + '</button><button class="btn sm" data-act="nopert" data-i="' + i + '">✖ No pertenece a la campaña — no productivo</button></div>').join("") : '<p class="muted">No hay usuarios pendientes de cruzar.</p>';
+    body = '<div class="grid23"><div class="card"><div class="ct" style="margin-bottom:6px">En la descarga de agentes — faltan cruzar</div>' + left + '</div><div class="card"><div class="ct" style="margin-bottom:6px">En el Roster — aún sin contar</div>' + heat(["ID", "Login", { t: "Agente", cls: "l" }, "LOB", "Turno de hoy", "Llamadas"], U.roster.map((r) => ({ c: r.map((v, k) => k === 5 && v > 0 ? { t: String(v), st: SK.bad } : (k === 2 ? { t: v, cls: "l" } : String(v))) }))) + "</div></div>";
+  } else if (S.utab === "her") {
+    body = '<div class="card"><div class="row"><button class="btn act" data-act="hconf">Confirmar marcados</button><button class="btn" data-act="hconfall">Confirmar todos</button><button class="btn" data-act="hundo">Deshacer marcados</button><button class="btn" data-act="simul" data-m="Cambiar cruce (simulado en la demo)">Cambiar…</button></div>' + userTable(U.her, "her") + "</div>";
+  } else {
+    body = '<div class="card"><div class="row"><button class="btn" data-act="rundo">Deshacer marcados</button><button class="btn" data-act="simul" data-m="Cambiar cruce (simulado en la demo)">Cambiar…</button>' + (ctx().onp ? '<button class="btn" data-act="simul" data-m="Corregir login (simulado)">Corregir login…</button><button class="btn" data-act="simul" data-m="Login erróneo (simulado)">Login erróneo</button>' : "") + "</div>" + userTable(U.res, "res") + "</div>";
+  }
+  const help = S.help ? '<div class="card"><div class="ct">Cómo funciona</div><ol class="small" style="line-height:1.7;margin:6px 0 0 18px"><li>La descarga de agentes trae usuarios de la central; el Roster trae a las personas con su ID.</li><li>Si el ID de log coincide, el cruce es automático.</li><li>Si no coincide, queda pendiente y se cruza a mano.</li><li>Un cruce manual se guarda y se reutiliza en los días siguientes.</li><li>Los heredados son cruces de la semana anterior que conviene revisar.</li><li>«No pertenece a la campaña» deja al usuario como no productivo.</li><li>Un usuario sin cruzar no cuenta en staff ni en productividad.</li></ol></div>' : "";
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Usuarios</h1><div class="muted">Cruce de los usuarios de la central con el Roster</div></div><div class="cb"><button class="btn" data-act="simul" data-m="Exportar a Excel (simulado: la demo no descarga archivos)">Exportar a Excel</button><button class="btn" data-act="help">❔ Cómo funciona</button></div></div>' +
+    (U.pend.length ? '<div class="note" style="color:#DC2626;font-weight:700">Hay usuarios de la descarga de agentes que no cruzan con el Roster.</div>' : "") +
+    '<div style="margin:6px 0 10px">' + tile("Usuarios en la descarga", tot) + tile("Cruzados automático", U.res.filter((x) => x.c.indexOf("automático") === 0).length) + tile("Cruce manual", U.res.filter((x) => x.c === "cruce manual").length) + tile("Pendientes", U.pend.length) + "</div>" + help +
+    '<div class="tabs" role="tablist">' + tabs.map((t) => '<button class="' + (S.utab === t[0] ? "on" : "") + '" data-act="tab" data-s="utab" data-v="' + t[0] + '">' + t[1] + "</button>").join("") + "</div>" + body;
+}
+function userTable(list, key) {
+  const rows = list.map((x, i) => ({ c: [{ h: '<input type="checkbox" data-uchk="' + key + ":" + i + '"' + (x.chk ? " checked" : "") + ">" }, { t: x.u, cls: "l" }, { t: x.r, cls: "l" }, x.id, { t: x.c, cls: "l" }, x.by || ""] }));
+  return heat(["", { t: "Usuario en la central", cls: "l" }, { t: "Cruzado con (Roster)", cls: "l" }, "ID de log", { t: "Cómo se cruzó", cls: "l" }, "Lo guardó"], rows.length ? rows : [[{ t: "Sin filas", cs: 6, cls: "em" }]]);
+}
+
+/* ===================== Historial ===================== */
+function viewHist() {
+  const c = ctx(), rows = [];
+  for (let k = 0; k < 12; k++) {
+    const d = dayDate(k), has = k > 0 || !!c.d;
+    if (!has) continue;
+    const t = k === 0 && c.d ? c.d.stamp : new Date(d.getFullYear(), d.getMonth(), d.getDate(), 17 + (hs(fdate(d)) % 3), hs(fdate(d) + "m") % 60, 0);
+    const key = fdate(d);
+    rows.push({ c: [{ t: DOW[d.getDay()] + " " + key, cls: "l" }, { t: "Reporte_Campania_" + c.id + "_" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + ".xlsx", cls: "l" }, key === fdate(dayDate(0)) ? fdate(t) + " " + pad(t.getHours()) + ":" + pad(t.getMinutes()) : fdate(t) + " " + pad(t.getHours()) + ":" + pad(t.getMinutes())], cls: (S.selHist === key ? "rsel " : "") + "clk", attr: 'data-act="selhist" data-v="' + key + '" data-dbl="1"' });
+  }
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Historial</h1><div class="muted">Excel del día con todas las tablas, actualizado en cada «Actualizar datos»</div></div><div class="cb"><button class="btn" data-act="simul" data-m="Abrir archivo (simulado: la demo no abre archivos)">Abrir archivo</button><button class="btn" data-act="simul" data-m="Abrir carpeta (simulado)">Abrir carpeta</button><button class="btn" data-act="simul" data-m="Historial recargado">Recargar</button></div></div>' +
+    '<div class="note">Mostrando: carpeta local · Reportes / Campaña ' + c.id + "</div>" + '<div class="card">' + heat([{ t: "Fecha", cls: "l" }, { t: "Archivo", cls: "l" }, "Última actualización"], rows.length ? rows : [[{ t: "Todavía no hay reportes guardados. Presione Actualizar datos.", cs: 3, cls: "em" }]]) + '<div class="note">Doble clic en una fila abre el archivo. En modo Demo el historial real no se guarda.</div></div>';
+}
+
+/* ===================== Glosario, Changelog, Acerca de ===================== */
+function viewGloss() {
+  const c = ctx(); let sel = null, grp = null;
+  GLOSS.forEach((g) => g.it.forEach((x) => { if (x.n === S.gloss) { sel = x; grp = g; } }));
+  let gg = null; if (!sel && S.gloss.indexOf("g:") === 0) gg = GLOSS.filter((g) => g.g === S.gloss.slice(2))[0];
+  const tree = GLOSS.map((g) => '<div class="gr" data-act="gl" data-v="g:' + esc(g.g) + '" style="cursor:pointer">' + esc(g.g) + "</div>" + g.it.map((x) => '<div class="it' + (S.gloss === x.n ? " on" : "") + '" data-act="gl" data-v="' + esc(x.n) + '">' + esc(x.n) + "</div>").join("")).join("");
+  const det = sel ? '<div class="muted small">' + esc(grp.g) + "</div><h2>" + esc(sel.n) + "</h2><h4>Qué mide</h4><div>" + esc(sel.m) + "</div><h4>Cómo se calcula</h4><div>" + esc(sel.c) + "</div><h4>De dónde sale</h4><div>" + esc(sel.o) + "</div>" : gg ? '<div class="muted small">Grupo</div><h2>' + esc(gg.g) + "</h2><div>" + esc(gg.intro) + "</div>" : '<div class="muted">Elija un indicador de la lista para ver cómo se calcula.</div>';
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Glosario</h1><div class="muted">Cómo se calcula cada indicador. Motor de datos de la Campaña ' + c.id + ": " + (c.onp ? "consulta a base de datos (solo lectura)" : "descargas CSV de la central") + '.</div></div></div><div class="grid23"><div class="card tree">' + tree + '</div><div class="card det">' + det + "</div></div>";
+}
+function viewChangelog() {
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Changelog</h1><div class="muted">Historial de cambios de la maqueta</div></div></div>' + CHANGELOG.map((e) => '<div class="cl"><div class="cht" style="background:' + e.c + '">' + esc(e.t) + "</div>" + e.it.map((x) => '<div class="cli"><span class="bdg" style="background:' + (BADGE[x[0]] || "#555") + '">' + x[0] + "</span><span>" + esc(x[1]) + "</span></div>").join("") + "</div>").join("");
+}
+function viewAbout() {
+  const row = (l, v) => "<tr><td class='l b' style='width:160px'>" + l + "</td><td class='l'>" + v + "</td></tr>";
+  return '<div class="hdr" style="margin:6px 0 8px"><div><h1 class="pt">Acerca de</h1></div></div><div class="card"><div class="ct" style="margin-bottom:8px">Información</div><table class="heat" style="width:100%;max-width:640px"><tbody>' + row("Versión", VER) + row("Estado", "Demo con datos ficticios") + row("Fecha", "13/11/2026") + row("Desarrollado por", "Axel Hernán González 🔥") + row("Copyright", "© 2026 Axel Hernán González") + '</tbody></table><div class="row" style="margin-top:10px"><button class="btn" data-act="chk">Buscar actualizaciones</button><span class="muted small">' + esc(S.updMsg) + '</span></div><p class="muted" style="margin-top:14px">Hecho con mucho ❤ para equipos de operaciones.</p><p class="muted small">Esta página es una maqueta visual: no usa datos reales ni se conecta a ningún sistema.</p></div>';
+}
+
+/* ===================== Modales ===================== */
+function openModal(html) { $("#mbox").innerHTML = html; $("#modal").classList.add("on"); }
+function closeModal() { $("#modal").classList.remove("on"); S.cal = null; }
+function calHTML() {
+  const cs = S.cal, first = new Date(cs.y, cs.m, 1), today = dayDate(0), start = first.getDay(), days = new Date(cs.y, cs.m + 1, 0).getDate();
+  let g = DOW.map((d) => '<div class="h">' + d + "</div>").join("");
+  for (let i = 0; i < start; i++) g += "<div></div>";
+  for (let d = 1; d <= days; d++) { const dt = new Date(cs.y, cs.m, d, 12), diff = Math.round((today - dt) / 864e5), dis = dt > today || diff > 31; g += '<button data-act="calpick" data-v="' + diff + '"' + (dis ? " disabled" : "") + (diff === S.dayOff ? ' class="on"' : "") + ">" + d + "</button>"; }
+  return '<h3>Personalizar fecha</h3><div class="row"><button class="btn sm" data-act="calprev">◀</button><b style="flex:1;text-align:center">' + MES[cs.m] + " " + cs.y + '</b><button class="btn sm" data-act="calnext">▶</button></div><div class="cal">' + g + '</div><div class="note">No se admiten fechas futuras ni anteriores a 31 días. Esc cierra.</div><div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeM">Cerrar</button></div>';
+}
+function mailHTML(c) {
+  const m = c.p.mail, f = c.p.cfgMail || { to: "equipo@ejemplo.com", cc: "supervision@ejemplo.com", subj: "Reporte del día {fecha} {hora} — Campaña " + c.id };
+  const now = new Date(), sub = f.subj.replace("{fecha}", pad(now.getDate()) + "/" + pad(now.getMonth() + 1)).replace("{hora}", pad(now.getHours()) + ":" + pad(now.getMinutes())).replace("{hhmm}", pad(now.getHours()) + pad(now.getMinutes()));
+  const lab = { acum: "Acumulado", traf: "Gráfico de tráfico", niv: "Niveles x Franja", aux: "Detalle AUX", rsup: "Rankings Supervisores", rag: "Rankings Agentes", ingr: "Ingresos por franja por colas", tipo: "Tipologías" };
+  const body = Object.keys(lab).filter((k) => m.body[k] && !(c.onp && k === "tipo")).map((k) => "<li>" + lab[k] + "</li>").join("") || "<li class='muted'>(sin secciones)</li>";
+  const adj = [m.adj.acum ? "Reporte Acumulado (.xlsx)" : "", !c.onp && m.adj.tipif ? "Tipificaciones (.xlsx)" : ""].filter(Boolean).map((x) => "<li>" + x + "</li>").join("") || "<li class='muted'>(sin adjuntos)</li>";
+  return '<h3>Borrador de correo (simulado)</h3><div class="frm" style="grid-template-columns:70px 1fr;gap:4px 10px"><b>Para</b><span>' + esc(f.to) + "</span><b>CC</b><span>" + esc(f.cc) + "</span><b>Asunto</b><span>" + esc(sub) + '</span></div><div class="sec">Cuerpo</div><ul>' + body + '</ul><div class="sec">Adjuntos</div><ul>' + adj + '</ul><div class="note">El programa real abre un borrador y nunca envía solo. Esta demo no abre ni envía ningún correo.</div><div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeM">Cerrar</button></div>';
+}
+
+
+/* ===================== Cáscara: barra lateral, superior y estado ===================== */
+const srcName = () => ({ red: "Red", local: "Local", demo: "Demo" }[S.mode]);
+function renderSide() {
+  const id = S.camp, C = CAMPS[id];
+  const emb = $("#emb"); emb.style.background = "hsl(" + C.hue + ",65%,42%)"; emb.textContent = id;
+  $("#camp").innerHTML = Object.keys(CAMPS).map((k) => '<option value="' + k + '"' + (k === id ? " selected" : "") + ">Campaña " + k + "</option>").join("");
+  const pend = S.users.pend.length;
+  $("#nav").innerHTML = NAVS.map((g) => '<div class="cap">' + g[0] + "</div>" + g[1].map((n) => '<div class="nav' + (S.view === n[0] ? " on" : "") + '" data-act="nav" data-v="' + n[0] + '" role="button" tabindex="0"><span class="ic">' + n[1] + "</span><span>" + n[2] + (n[0] === "usuarios" && pend ? " (" + pend + ")" : "") + "</span></div>").join("")).join("");
+  $("#bupd").disabled = S.loading; $("#bmail").disabled = !S.data[id];
+}
+function renderTop() {
+  $("#ver").textContent = VER;
+  const M = { red: ["🟢 MODO RED", "red"], local: ["🟠 MODO LOCAL", "loc"], demo: ["🧪 MODO DEMO", "demo"] }[S.mode], b = $("#modebtn");
+  b.textContent = M[0]; b.className = "mode " + M[1];
+  $("#thbtn").textContent = S.theme === "dark" ? "☀ Claro" : "🌙 Oscuro";
+  $("#updst").textContent = S.updMsg;
+}
+const renderBar = () => { $("#bar").textContent = S.status || ("Campaña " + S.camp + ": presione Actualizar datos para cargarlos."); };
+function logLine(type, msg) {
+  const n = new Date(); S.logs.push({ t: pad(n.getHours()) + ":" + pad(n.getMinutes()) + ":" + pad(n.getSeconds()), type: type, msg: msg });
+  if (S.logs.length > 200) S.logs.shift(); renderLog();
+}
+function renderLog() { const el = $("#log"); el.innerHTML = S.logs.map((l) => '<div><span class="t">' + l.t + '</span> <span class="' + l.type + '">' + esc(l.msg) + "</span></div>").join(""); el.scrollTop = el.scrollHeight; }
+function render() {
+  document.documentElement.setAttribute("data-theme", S.theme);
+  renderSide(); renderTop();
+  const v = $("#view"), top = v.scrollTop;
+  const fn = { dashboard: viewDashboard, historial: viewHist, usuarios: viewUsers, parametros: viewParams, config: viewConfig, glosario: viewGloss, changelog: viewChangelog, acerca: viewAbout }[S.view];
+  try { v.innerHTML = fn(); } catch (e) { v.innerHTML = '<div class="ph">Ocurrió un error inesperado (' + esc(e && e.name) + ") — ver el registro.</div>"; logLine("error", "Error al dibujar la vista: " + (e && e.message)); }
+  v.scrollTop = top; renderBar();
+}
+let tt;
+function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2600); }
+
+/* ===================== Actualizar datos (simulado) ===================== */
+function actualizar() {
+  if (S.loading) return;
+  const id = S.camp, C = CAMPS[id], t0 = Date.now();
+  S.loading = true; S.status = "Cargando datos — fuente: " + srcName() + "…"; render();
+  const nq = Object.keys(C.segs).reduce((a, n) => a + C.segs[n].length, 0);
+  [[0, "step", "Actualizando Campaña " + id + "…"], [250, "info", "Fuente: " + srcName() + " (datos ficticios generados en el navegador)"], [550, "step", C.kind === "onp" ? "Consultando la base de datos (solo lectura)…" : "Leyendo las descargas de la central…"], [900, "info", "Colas leídas: " + nq + " · segmentos: " + Object.keys(C.segs).length], [1200, "step", "Cruzando agentes con el Roster…"], [1500, S.users.pend.length ? "warning" : "success", S.users.pend.length ? S.users.pend.length + " usuario(s) de la descarga sin cruzar con el Roster" : "Todos los usuarios cruzaron con el Roster"], [1800, "step", "Calculando franjas de 30 minutos…"]].forEach((s) => setTimeout(() => logLine(s[1], s[2]), s[0]));
+  setTimeout(() => {
+    S.seed = S.fixedSeed != null ? S.fixedSeed : Math.floor(Math.random() * 100000);
+    S.data[id] = genData(id, S.seed, C.kind === "onp" ? S.dayOff : 0);
+    S.loading = false;
+    const d = S.data[id], n = new Date();
+    logLine("success", "Calculado en " + ((Date.now() - t0) / 1000).toFixed(1).replace(".", ",") + " s");
+    logLine("success", "Historial guardado: día " + pad(d.date.getDate()) + "/" + pad(d.date.getMonth() + 1) + " — franjas " + SLOTS[0].l + " a " + SLOTS[d.closed].l);
+    S.status = "Calculado — fuente: " + srcName() + " — " + pad(n.getHours()) + ":" + pad(n.getMinutes()) + ":" + pad(n.getSeconds());
+    render();
+  }, 2100);
+}
+function updateCheck() {
+  S.updMsg = "Buscando…"; render();
+  setTimeout(() => { S.updMsg = "Está en la última versión (" + VER + ") — no hay versiones publicadas"; render(); }, 900);
+}
+
+/* ===================== Edición de parámetros ===================== */
+function setPath(obj, path, val) { let o = obj; for (let i = 0; i < path.length - 1; i++) { if (o[path[i]] == null || typeof o[path[i]] !== "object") o[path[i]] = {}; o = o[path[i]]; } o[path[path.length - 1]] = val; }
+const selKeys = (m) => Object.keys(m).filter((k) => m[k]);
+function reapply(map, origin, keys, target) { keys.forEach((k) => { map[k] = target; origin[k] = "Manual"; }); }
+function resetKeys(map, origin, keys, def) { keys.forEach((k) => { map[k] = def[k] === undefined ? null : def[k]; origin[k] = "Por defecto"; }); }
+function addSeg(c) {
+  const p = c.p, name = ($("#newseg").value || "").trim();
+  if (!name) return "Escriba el nombre del segmento.";
+  if (name.length > 30) return "El nombre admite hasta 30 caracteres.";
+  if (/[\\/:*?"<>|\[\]]/.test(name)) return 'El nombre no admite los caracteres \\ / : * ? " < > | [ ]';
+  if (["todos", "general"].indexOf(name.toLowerCase()) >= 0) return "El nombre «" + name + "» está reservado.";
+  if (p.segments.some((s) => s.name.toLowerCase() === name.toLowerCase())) return "Ya existe un segmento con ese nombre.";
+  p.segments.push({ name: name, origen: "Creado" }); p.segVis[name] = true; p.imgNiv[name] = true; p.mail.segs[name] = true; p.mail.traf[name] = true;
+  return "Segmento «" + name + "» agregado. Elija colas en la tabla de abajo y presione Aplicar para que cuenten en él.";
+}
+function delSeg(c) {
+  const p = c.p, n = S.selSeg, s = p.segments.filter((x) => x.name === n && x.origen === "Creado")[0];
+  if (!s) return "Elija un segmento creado para eliminarlo.";
+  p.segments = p.segments.filter((x) => x.name !== n);
+  [p.queueMap, p.lobMap, p.overXlsMap, p.overDbMap].forEach((m) => Object.keys(m).forEach((k) => { if (m[k] === n) m[k] = null; }));
+  delete p.segVis[n]; delete p.imgNiv[n]; delete p.mail.segs[n]; delete p.mail.traf[n];
+  if (S.seg === n) S.seg = "Todos"; S.selSeg = "";
+  return "Segmento «" + n + "» eliminado.";
+}
+function saveHz(c) {
+  const h = {}, bad = [];
+  [["lv", "d"], ["lv", "h"], ["fin", "d"], ["fin", "h"], ["fer", "d"], ["fer", "h"]].forEach((x) => { h[x[0]] = h[x[0]] || {}; const v = ($("#hz_" + x[0] + "_" + x[1]).value || "").trim(); h[x[0]][x[1]] = v; if (v && isNaN(toMin(v))) bad.push(v); });
+  if (bad.length) return "Hora inválida: use el formato HH:MM.";
+  for (const k of ["lv", "fin", "fer"]) { if (h[k].d && h[k].h && toMin(h[k].d) >= toMin(h[k].h)) return "En «" + ({ lv: "Lunes a viernes", fin: "Sábado y domingo", fer: "Feriados" }[k]) + "», «Desde» debe ser menor que «Hasta»."; }
+  c.p.horario = h; return "Horario guardado.";
+}
+function addFer(c) {
+  const v = ($("#newfer").value || "").trim(), m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v);
+  if (!m) return "Escriba la fecha con el formato DD/MM/AAAA.";
+  const dt = new Date(+m[3], +m[2] - 1, +m[1]); if (dt.getDate() !== +m[1] || dt.getMonth() !== +m[2] - 1) return "La fecha no existe.";
+  if (c.p.feriados.indexOf(v) >= 0) return "Ese feriado ya está cargado.";
+  c.p.feriados.push(v); return "Feriado agregado.";
+}
+
+/* ===================== Acciones ===================== */
+function act(a, el) {
+  const c = ctx(), p = c.p, v = el && el.dataset ? el.dataset.v : "", msgs = {
+    copytxt: "Texto copiado al portapapeles (simulado en la demo).", copyimg: "Imagen copiada al portapapeles (simulado en la demo).",
+    copyblk: "Imagen del bloque copiada al portapapeles (simulado en la demo).", xlsx: "Exportado (simulado): la demo no descarga archivos."
+  };
+  const params = (m) => { S.pmsg = m; saveP(); render(); };
+  switch (a) {
+    case "nav": S.view = v; S.pmsg = ""; render(); $("#view").scrollTop = 0; $("#side").classList.remove("open"); break;
+    case "upd": actualizar(); break;
+    case "mail": case "mailx": openModal(mailHTML(c)); break;
+    case "burger": $("#side").classList.toggle("open"); break;
+    case "theme": S.theme = S.theme === "dark" ? "light" : "dark"; render(); break;
+    case "mode": if (S.mode === "demo") toast("El modo Demo solo se elige en Configuración → Fuente de datos."); else { S.mode = S.mode === "red" ? "local" : "red"; S.status = "Fuente cambiada a " + srcName() + ": presione Actualizar datos."; render(); } break;
+    case "chk": updateCheck(); break;
+    case "logclr": S.logs = []; renderLog(); break;
+    case "logcp": try { if (navigator.clipboard) navigator.clipboard.writeText(S.logs.map((l) => l.t + " " + l.msg).join("\n")); } catch (e) { /* sin portapapeles */ } toast("Log copiado al portapapeles."); break;
+    case "mv": { const list = S.order.filter((id) => !(c.onp && (id === "motivo" || id === "tipif"))), id = el.dataset.id, k = list.indexOf(id), o = list[k + (+el.dataset.d)]; if (o) { const i1 = S.order.indexOf(id), i2 = S.order.indexOf(o); S.order[i1] = o; S.order[i2] = id; render(); } break; }
+    case "col": S.collapsed[el.dataset.id] = !S.collapsed[el.dataset.id]; render(); break;
+    case "copytxt": case "copyimg": case "copyblk": case "xlsx": toast(msgs[a]); break;
+    case "simul": toast(el.dataset.m); break;
+    case "cal": { const d = dayDate(S.dayOff); S.cal = { y: d.getFullYear(), m: d.getMonth() }; openModal(calHTML()); break; }
+    case "calprev": S.cal.m--; if (S.cal.m < 0) { S.cal.m = 11; S.cal.y--; } $("#mbox").innerHTML = calHTML(); break;
+    case "calnext": S.cal.m++; if (S.cal.m > 11) { S.cal.m = 0; S.cal.y++; } $("#mbox").innerHTML = calHTML(); break;
+    case "calpick": S.dayOff = +v; closeModal(); actualizar(); break;
+    case "closeM": closeModal(); break;
+    case "tab": S[el.dataset.s] = v; S.pmsg = ""; render(); break;
+    case "selseg": S.selSeg = v; render(); break;
+    case "selq": S.selQ[v] = !S.selQ[v]; render(); break;
+    case "selL": S.selL[v] = !S.selL[v]; render(); break;
+    case "selO": S.selO[v] = !S.selO[v]; render(); break;
+    case "selfer": S.selFer = v; render(); break;
+    case "selsk": S.selSk = v; render(); break;
+    case "selhist": S.selHist = v; render(); break;
+    case "addseg": params(addSeg(c)); break;
+    case "delseg": params(delSeg(c)); break;
+    case "applyq": { const k = selKeys(S.selQ); if (!k.length) { params("Elija al menos una cola de la tabla."); break; } const t = $("#cq").value; reapply(p.queueMap, p.queueOrigin, k, t === "__none__" ? null : t); S.selQ = {}; params("Se aplicó el cambio a " + k.length + " cola(s)."); break; }
+    case "defq": { const k = selKeys(S.selQ), d = defParams(S.camp); resetKeys(p.queueMap, p.queueOrigin, k.length ? k : Object.keys(p.queueMap), d.queueMap); S.selQ = {}; params("Valores por defecto restaurados para las colas."); break; }
+    case "applyL": { const k = selKeys(S.selL); if (!k.length) { params("Elija al menos un LOB de la tabla."); break; } const t = $("#cl").value; reapply(p.lobMap, p.lobOrigin, k, t === "__none__" ? null : t); S.selL = {}; params("Se aplicó el cambio a " + k.length + " LOB."); break; }
+    case "defL": { const k = selKeys(S.selL), d = defParams(S.camp); resetKeys(p.lobMap, p.lobOrigin, k.length ? k : Object.keys(p.lobMap), d.lobMap); S.selL = {}; params("Valores por defecto restaurados para los LOB."); break; }
+    case "applyO": { const k = selKeys(S.selO); if (!k.length) { params("Elija al menos un LOB del Over."); break; } const t = $("#co").value === "__none__" ? null : $("#co").value; k.forEach((x) => { const nm = x.slice(2); (x[0] === "x" ? p.overXlsMap : p.overDbMap)[nm] = t; p.overOrigin[nm] = "Manual"; }); S.selO = {}; params("Se aplicó el cambio a " + k.length + " LOB del Over."); break; }
+    case "defO": { const d = defParams(S.camp); Object.keys(p.overXlsMap).forEach((l) => { p.overXlsMap[l] = d.overXlsMap[l]; p.overDbMap[l] = d.overDbMap[l]; p.overOrigin[l] = "Por defecto"; }); S.selO = {}; params("Valores por defecto restaurados para el Over."); break; }
+    case "savehz": params(saveHz(c)); break;
+    case "addfer": params(addFer(c)); break;
+    case "delfer": p.feriados = p.feriados.filter((f) => f !== S.selFer); S.selFer = ""; params("Feriado quitado."); break;
+    case "setsk": { const nm = ($("#skname").value || "").trim(); if (!S.selSk) { params("Elija un skill de la lista."); break; } if (!nm) { params("Escriba el nombre, o presione «Por defecto»."); break; } p.skills[S.selSk] = { nombre: nm, origen: "Manual" }; params("Nombre guardado."); break; }
+    case "defsk": if (!S.selSk) { params("Elija un skill de la lista."); break; } p.skills[S.selSk] = { nombre: "Skill " + S.selSk.replace("Skill_", ""), origen: "Por defecto" }; params("Nombre por defecto restaurado."); break;
+    case "restore": openModal('<h3>Restaurar valores por defecto</h3><p>¿Restaurar todos los parámetros de la Campaña ' + c.id + " a sus valores por defecto?</p>" + '<div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeM">No</button><button class="btn act" data-act="restoreYes">Sí</button></div>'); break;
+    case "restoreYes": P[S.camp] = defParams(S.camp); S.seg = "Todos"; S.selQ = {}; S.selL = {}; S.selO = {}; closeModal(); params("Valores por defecto restaurados."); break;
+    case "cruz": { const x = S.users.pend.splice(+el.dataset.i, 1)[0]; S.users.res.unshift({ u: x.u, r: x.sug, id: "336" + pad(10 + S.users.res.length), c: "cruce manual", by: "demo.user", chk: false }); render(); toast("Cruce guardado."); break; }
+    case "nopert": { const x = S.users.pend.splice(+el.dataset.i, 1)[0]; S.users.res.unshift({ u: x.u, r: "—", id: "", c: "no pertenece a la campaña — no productivo", by: "demo.user", chk: false }); render(); toast("Usuario marcado como no productivo."); break; }
+    case "hconf": case "hconfall": { const keep = []; S.users.her.forEach((x) => { if (a === "hconfall" || x.chk) S.users.res.unshift({ u: x.u, r: x.r, id: x.id, c: "cruce manual", by: "demo.user", chk: false }); else keep.push(x); }); S.users.her = keep; render(); break; }
+    case "hundo": { const keep = []; S.users.her.forEach((x) => { if (x.chk) S.users.pend.push({ u: x.u, sug: x.r }); else keep.push(x); }); S.users.her = keep; render(); break; }
+    case "rundo": { const keep = []; S.users.res.forEach((x) => { if (x.chk) S.users.pend.push({ u: x.u, sug: x.r === "—" ? "Agente 07" : x.r }); else keep.push(x); }); S.users.res = keep; render(); break; }
+    case "help": S.help = !S.help; render(); break;
+    case "gl": S.gloss = v; render(); break;
+  }
+}
+function onChange(e) {
+  const t = e.target, c = ctx();
+  if (t.dataset.pp) {
+    const path = JSON.parse(t.dataset.pp), val = t.type === "checkbox" ? t.checked : t.value;
+    if (path[0] === "aux" && !val && !Object.keys(c.p.aux).some((k) => k !== path[1] && c.p.aux[k])) { S.pmsg = "La tabla AUX necesita al menos una categoría."; render(); return; }
+    if (path[0] === "segVis" && !val && !c.p.segments.some((s) => s.name !== path[1] && c.p.segVis[s.name] !== false)) { S.pmsg = "Debe quedar al menos un segmento visible."; render(); return; }
+    setPath(P[S.camp], path, val); S.pmsg = "Cambio guardado."; saveP(); render(); return;
+  }
+  if (t.dataset.uchk) { const k = t.dataset.uchk.split(":"); S.users[k[0]][+k[1]].chk = t.checked; return; }
+  if (t.id === "camp") { S.camp = t.value; S.seg = "Todos"; S.selQ = {}; S.selL = {}; S.selO = {}; S.selSeg = ""; S.status = "Campaña " + S.camp + ": presione Actualizar datos para cargarlos."; if (S.data[S.camp]) S.status = "Calculado — fuente: " + srcName(); render(); return; }
+  switch (t.dataset.chg) {
+    case "seg": S.seg = t.value; render(); break;
+    case "topAg": S.topAg = t.value; render(); break;
+    case "topMot": S.topMot = t.value; render(); break;
+    case "exclF": c.p.exclF = t.value; saveP(); render(); break;
+    case "day": S.dayOff = +t.value; actualizar(); break;
+    case "mode": S.mode = t.value; S.status = "Fuente: " + srcName() + ". Presione Actualizar datos para recalcular."; render(); break;
+  }
+}
+
+/* ===================== Arranque ===================== */
+function initWordmark() {
+  $("#wmw").innerHTML = "KPI".split("").map((ch) => "<span>" + ch + "</span>").join("");
+  $("#wms").innerHTML = "Reporte Operativo".split("").map((ch) => (ch === " " ? " " : "<span>" + ch + "</span>")).join("");
+}
+function tickWordmark() {
+  const t = Date.now() / 1000, l = S.theme === "dark" ? 64 : 36;
+  $$("#wmw span").forEach((e, i) => { e.style.color = "hsl(" + ((t * 72 + i * 55) % 360) + ",78%," + l + "%)"; });
+  $$("#wms span").forEach((e, i) => { e.style.color = "hsl(" + ((t * 72 + 180 + i * 22) % 360) + ",70%," + l + "%)"; });
+}
+function parseHash() {
+  const q = new URLSearchParams(location.hash.replace(/^#/, ""));
+  if (q.get("th")) S.theme = q.get("th") === "dark" ? "dark" : "light";
+  if (q.get("c") && CAMPS[q.get("c")]) S.camp = q.get("c");
+  if (q.get("v")) S.view = q.get("v");
+  if (q.get("t")) { if (S.view === "parametros") S.ptab = q.get("t"); if (S.view === "config") S.ctab = q.get("t"); if (S.view === "usuarios") S.utab = q.get("t"); }
+  if (q.get("seed") && isFinite(+q.get("seed"))) S.fixedSeed = +q.get("seed");
+  if (q.get("seg")) S.seg = q.get("seg");
+  if (q.get("gl")) S.gloss = q.get("gl");
+}
+function boot() {
+  loadP(); initUsers(); parseHash(); initWordmark();
+  document.addEventListener("click", (e) => { const el = e.target.closest("[data-act]"); if (el && !el.disabled) act(el.dataset.act, el); });
+  document.addEventListener("dblclick", (e) => { if (e.target.closest("[data-dbl]")) toast("Abrir archivo (simulado: la demo no abre archivos)."); });
+  document.addEventListener("change", onChange);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+    if (e.key === "Enter") { const id = e.target && e.target.id; if (id === "newseg") act("addseg"); else if (id === "newfer") act("addfer"); else if (id === "skname") act("setsk", { dataset: {} }); }
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("nav")) { e.preventDefault(); act("nav", e.target); }
+  });
+  $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+  logLine("info", "Demo visual con datos ficticios.");
+  logLine("info", "Todos los números se generan al azar en el navegador.");
+  render(); tickWordmark();
+  if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) setInterval(tickWordmark, 160);
+  actualizar();
+}
+boot();
+})();
+
+</script>
+</body>
+</html>
