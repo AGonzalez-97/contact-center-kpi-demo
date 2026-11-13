@@ -6,6 +6,8 @@ Maqueta navegable de un sistema de reportes operativos para contact center con v
 
 Es un único archivo HTML: no tiene dependencias, no necesita instalación y no se conecta a ningún servidor.
 
+**[Ver la demo en vivo](https://agonzalez-97.github.io/contact-center-kpi-demo/)**
+
 ![Dashboard en tema claro](docs/img/dashboard-claro.png)
 
 ## Qué muestra
