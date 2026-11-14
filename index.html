@@ -76,7 +76,7 @@ h1.pt{font-size:21px;margin:0 0 2px}
 .pill.ok{background:#DCFCE7;color:#166534}.pill.bad{background:#FEE2E2;color:#991B1B}.pill.neu{background:var(--neu-bg);color:var(--neu-fg)}
 .dayrow{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px}
 .note{font-size:11px;color:var(--muted);margin:4px 0}
-.kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(var(--n,7),minmax(0,1fr));gap:6px;margin-bottom:12px}
 .kpi{background:var(--card);border:1px solid var(--border);padding:8px;display:flex;gap:8px;align-items:center;min-width:0}
 .kpi .ci{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
 .kpi .kl{font-size:10px;color:var(--muted)}.kpi .kv{font-size:19px;font-weight:700;line-height:1.1}
@@ -133,7 +133,8 @@ table.heat tr.clk{cursor:pointer}
   #app{grid-template-columns:minmax(0,1fr)}
   #side{position:fixed;left:0;top:28px;bottom:0;width:250px;z-index:30;transform:translateX(-100%);transition:transform .2s}
   #side.open{transform:none}#burger{display:inline-block}
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.frm{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.krow{flex-wrap:wrap}.krow .kpis{flex:1 1 100%}.chips{justify-content:flex-start}.chip{max-width:none}.kpi{padding:10px}.hdr{justify-content:flex-start}.frm{grid-template-columns:1fr}
+  #top{justify-content:space-between}
 }
 @media (max-height:760px){.emb,.foot{display:none}}
 
@@ -728,7 +729,7 @@ function kpiRow(c) {
   if (c.p.cols.aus !== false) it.push(["", "#6B7280", "Ausentismo", pc(t.aus, 1)]);
   it.push(["", "#0891B2", "AUX", pc(t.auxp, 1)]);
   const k = it.map((x) => '<div class="kpi" style="border-left:4px solid ' + x[1] + '"><div><div class="kl">' + x[2] + '</div><div class="kv">' + x[3] + "</div></div></div>").join("");
-  return '<div class="krow"><div class="kpis" style="grid-template-columns:repeat(' + it.length + ',minmax(0,1fr))">' + k + "</div>" + (c.p.segments.length > 1 ? '<div style="align-self:flex-start">' + segSelHTML() + "</div>" : "") + "</div>";
+  return '<div class="krow"><div class="kpis" style="--n:' + it.length + '">' + k + "</div>" + (c.p.segments.length > 1 ? '<div style="align-self:flex-start">' + segSelHTML() + "</div>" : "") + "</div>";
 }
 function blockWrap(id, inner, i, n) {
   const col = S.collapsed[id], cp = (id === "niv" && ctx().p.segments.length >= 2) || id === "rsup" || id === "rag";
