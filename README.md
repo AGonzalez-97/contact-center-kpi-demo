@@ -1,5 +1,10 @@
 # Panel de reportes operativos para contact center — demo visual
 
+![Demo](https://img.shields.io/badge/Demo-datos%20ficticios-F2B63C)
+![Stack](https://img.shields.io/badge/Stack-HTML%20%C2%B7%20CSS%20%C2%B7%20JS-E34F26?logo=html5&logoColor=white)
+![Dependencias](https://img.shields.io/badge/Dependencias-ninguna-59E08A)
+![Licencia](https://img.shields.io/badge/Licencia-MIT-blue)
+
 > **Demo visual con datos ficticios.** Ningún número, nombre o identificador de este repositorio corresponde a un cliente, campaña o sistema real.
 
 Maqueta navegable de un sistema de reportes operativos para contact center con varias campañas. Cada campaña tiene sus propios segmentos y su propia fuente de datos, y el panel calcula nivel de atención, nivel de servicio, abandono, tiempos de atención y dotación por franja de 30 minutos.
