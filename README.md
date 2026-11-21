@@ -55,6 +55,15 @@ Parámetros opcionales en la URL, útiles para enlazar una vista concreta:
 
 HTML, CSS y JavaScript sin librerías ni paso de compilación. Los gráficos son SVG generados en el navegador.
 
+## Contexto y método
+
+Esta demo reproduce, con datos ficticios, el tipo de herramienta que desarrollé para un entorno laboral real (el código real es privado).
+
+- **Problema.** Los reportes en Excel eran lentos y tenían discrepancias: las fórmulas no se actualizaban al agregar una línea de negocio, con varios días de datos Excel daba errores o se colgaba por falta de memoria, y cada cambio rompía una fórmula o la volvía más pesada. Además, operaciones necesitaba el reporte dentro de los 10 minutos de iniciada cada franja de 30 minutos.
+- **Idea.** Mantener los archivos crudos que ya se usaban y procesarlos con otro motor (Python y Pandas) en lugar de fórmulas de Excel. Nació por iniciativa propia y se desarrolló con asistencia de IA.
+- **Validación.** La lógica ya existía en el Excel: se tomó como referencia, se migró con ayuda de IA y se controló contra ese Excel. Cada KPI nuevo se agrega directamente al programa y se valida con operaciones y gerencia antes de mostrar un resultado final al cliente.
+- **Resultado.** Tiempo promedio por campaña de unos 40 minutos a menos de 5 (cifras aproximadas, no un cronometraje formal), con entrega dentro de los 10 minutos de iniciada cada franja.
+
 ## Decisiones de diseño
 
 - **Razón de sumas.** Todos los porcentajes se calculan como suma de numeradores sobre suma de denominadores, nunca como promedio de porcentajes. Lo mismo vale para las filas de total.
